@@ -1,0 +1,24 @@
+# Default values for Fybrik.
+# This is a YAML-formatted file.
+# It overrides values that are different from the default values.yaml
+
+# Global configuration applies to multiple components installed by this chart
+global:
+  hub: localhost:5000/fybrik-system
+  tag: "master"
+  imagePullPolicy: "Always"
+
+# Manager component
+manager:
+  # Set to true to enable socat in the manager pod to forward
+  # traffic from a localhost registry. Used only for development and integration tests.
+  socat: true
+  extraEnvs:
+  - name: BATCHTRANSFER_CONCURRENT_RECONCILES
+    value: "1"
+  - name: STREAMTRANSFER_CONCURRENT_RECONCILES
+    value: "1"
+  - name: CLIENT_QPS
+    value: "100.0"
+  - name: CLIENT_BURST
+    value: "200"

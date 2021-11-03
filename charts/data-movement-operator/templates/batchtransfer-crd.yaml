@@ -1,0 +1,5 @@
+{{- if .Values.deployCRDs }}
+{{- if .Values.clusterScoped }}
+{{ tpl ( .Files.Get "files/motion.fybrik.io_batchtransfers.yaml" ) . }}
+{{- end }}
+{{- end }}

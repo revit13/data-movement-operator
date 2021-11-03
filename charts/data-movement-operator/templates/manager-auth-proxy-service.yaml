@@ -1,0 +1,19 @@
+{{- if .Values.manager.enabled }}
+{{- if and  .Values.clusterScoped .Values.manager.prometheus }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "fybrik.fullname" . }}-metrics-service
+  labels:
+    {{- include "fybrik.labels" . | nindent 4 }}
+    control-plane: controller-manager
+spec:
+  ports:
+  - name: https
+    port: 8443
+    targetPort: https
+  selector:
+    control-plane: controller-manager
+    {{- include "fybrik.selectorLabels" . | nindent 4 }}
+{{- end }}
+{{- end }}

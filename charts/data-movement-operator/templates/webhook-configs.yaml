@@ -1,0 +1,5 @@
+{{- if .Values.manager.enabled }}
+{{- if .Values.clusterScoped }}
+{{ tpl ( .Files.Get "files/webhook-configs.yaml" ) . }}
+{{- end }}
+{{- end }}

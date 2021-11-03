@@ -1,0 +1,9 @@
+# TODO Remove?
+{{- if .Values.manager.enabled }}
+{{- if .Values.clusterScoped }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.blueprintNamespace }}
+{{- end }}
+{{- end }}

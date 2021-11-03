@@ -1,0 +1,15 @@
+{{- if .Values.manager.enabled }}
+{{- if .Values.clusterScoped }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: webhook-service
+  namespace: {{ .Release.Namespace }}
+spec:
+  ports:
+  - port: 443
+    targetPort: 9443
+  selector:
+    control-plane: dmo-controller-manager
+{{- end }}
+{{- end }}

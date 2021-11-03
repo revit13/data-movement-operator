@@ -1,0 +1,26 @@
+{{- if .Values.manager.enabled }}
+{{- if .Values.clusterScoped }}
+apiVersion: {{ include "fybrik.certManagerApiVersion" . }}
+kind: Issuer
+metadata:
+  name: selfsigned-issuer
+  namespace: {{ .Release.Namespace }}
+spec:
+  selfSigned: {}
+
+---
+apiVersion: {{ include "fybrik.certManagerApiVersion" . }}
+kind: Certificate
+metadata:
+  name: serving-cert
+  namespace: {{ .Release.Namespace }}
+spec:
+  dnsNames:
+  - webhook-service.{{ .Release.Namespace }}.svc
+  - webhook-service.{{ .Release.Namespace }}.svc.cluster.local
+  issuerRef:
+    kind: Issuer
+    name: selfsigned-issuer
+  secretName: webhook-server-cert
+{{- end }}
+{{- end }}
