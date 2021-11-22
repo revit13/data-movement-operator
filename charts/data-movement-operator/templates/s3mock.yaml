@@ -3,20 +3,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: s3mock
+  name: dmo-s3mock
   labels:
-    app.kubernetes.io/component: s3mock
+    app.kubernetes.io/component: dmo-s3mock
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/component: s3mock
+      app.kubernetes.io/component: dmo-s3mock
   template:
     metadata:
       annotations:
         sidecar.istio.io/inject: "false"
       labels:
-        app.kubernetes.io/component: s3mock
+        app.kubernetes.io/component: dmo-s3mock
     spec:
       containers:
         - name: s3mock
@@ -38,7 +38,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: s3
+  name: dmo-s3
 spec:
   ports:
     - name: http
@@ -48,6 +48,6 @@ spec:
       port: 9191
       targetPort: 9191
   selector:
-    app.kubernetes.io/component: s3mock
+    app.kubernetes.io/component: dmo-s3mock
 
 {{- end }}

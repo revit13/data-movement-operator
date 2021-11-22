@@ -2,17 +2,17 @@ apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
 metadata:
   creationTimestamp: null
-  name: '{{ .Release.Namespace }}-mutating-webhook'
+  name: '{{ .Release.Namespace }}-dmo-mutating-webhook'
   annotations:
-    cert-manager.io/inject-ca-from: '{{ .Release.Namespace }}/serving-cert'
-    certmanager.k8s.io/inject-ca-from: '{{ .Release.Namespace }}/serving-cert'
+    cert-manager.io/inject-ca-from: '{{ .Release.Namespace }}/dmo-serving-cert'
+    certmanager.k8s.io/inject-ca-from: '{{ .Release.Namespace }}/dmo-serving-cert'
 webhooks:
   - admissionReviewVersions:
       - v1
       - v1beta1
     clientConfig:
       service:
-        name: webhook-service
+        name: dmo-webhook-service
         namespace: '{{ .Release.Namespace }}'
         path: /mutate-motion-fybrik-io-v1alpha1-batchtransfer
     failurePolicy: Fail
@@ -33,7 +33,7 @@ webhooks:
       - v1beta1
     clientConfig:
       service:
-        name: webhook-service
+        name: dmo-webhook-service
         namespace: '{{ .Release.Namespace }}'
         path: /mutate-motion-fybrik-io-v1alpha1-streamtransfer
     failurePolicy: Fail
@@ -54,17 +54,17 @@ apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingWebhookConfiguration
 metadata:
   creationTimestamp: null
-  name: '{{ .Release.Namespace }}-validating-webhook'
+  name: '{{ .Release.Namespace }}-dmo-validating-webhook'
   annotations:
-    cert-manager.io/inject-ca-from: '{{ .Release.Namespace }}/serving-cert'
-    certmanager.k8s.io/inject-ca-from: '{{ .Release.Namespace }}/serving-cert'
+    cert-manager.io/inject-ca-from: '{{ .Release.Namespace }}/dmo-serving-cert'
+    certmanager.k8s.io/inject-ca-from: '{{ .Release.Namespace }}/dmo-serving-cert'
 webhooks:
   - admissionReviewVersions:
       - v1
       - v1beta1
     clientConfig:
       service:
-        name: webhook-service
+        name: dmo-webhook-service
         namespace: '{{ .Release.Namespace }}'
         path: /validate-motion-fybrik-io-v1alpha1-batchtransfer
     failurePolicy: Fail
@@ -85,7 +85,7 @@ webhooks:
       - v1beta1
     clientConfig:
       service:
-        name: webhook-service
+        name: dmo-webhook-service
         namespace: '{{ .Release.Namespace }}'
         path: /validate-motion-fybrik-io-v1alpha1-streamtransfer
     failurePolicy: Fail

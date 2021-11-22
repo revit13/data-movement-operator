@@ -42,11 +42,12 @@ manifests: $(TOOLBIN)/controller-gen $(TOOLBIN)/yq
 	$(TOOLBIN)/controller-gen --version
 	$(TOOLBIN)/controller-gen crd:trivialVersions=true output:crd:artifacts:config=$(ROOT_DIR)/charts/data-movement-operator/files/ paths=./apis/...
 	$(TOOLBIN)/controller-gen webhook paths=./apis/... output:stdout | \
-		$(TOOLBIN)/yq eval '.metadata.annotations."cert-manager.io/inject-ca-from" |= "{{ .Release.Namespace }}/serving-cert"' - | \
-		$(TOOLBIN)/yq eval '.metadata.annotations."certmanager.k8s.io/inject-ca-from" |= "{{ .Release.Namespace }}/serving-cert"' - | \
-		$(TOOLBIN)/yq eval '(.metadata.name | select(. == "mutating-webhook-configuration")) = "{{ .Release.Namespace }}-mutating-webhook"' - | \
-		$(TOOLBIN)/yq eval '(.metadata.name | select(. == "validating-webhook-configuration")) = "{{ .Release.Namespace }}-validating-webhook"' - | \
-		$(TOOLBIN)/yq eval '(.webhooks.[].clientConfig.service.namespace) = "{{ .Release.Namespace }}"' - > $(ROOT_DIR)/charts/fybrik/files/webhook-configs.yaml
+		$(TOOLBIN)/yq eval '.metadata.annotations."cert-manager.io/inject-ca-from" |= "{{ .Release.Namespace }}/dmo-serving-cert"' - | \
+		$(TOOLBIN)/yq eval '.metadata.annotations."certmanager.k8s.io/inject-ca-from" |= "{{ .Release.Namespace }}/dmo-serving-cert"' - | \
+		$(TOOLBIN)/yq eval '(.metadata.name | select(. == "mutating-webhook-configuration")) = "{{ .Release.Namespace }}-dmo-mutating-webhook"' - | \
+		$(TOOLBIN)/yq eval '(.metadata.name | select(. == "validating-webhook-configuration")) = "{{ .Release.Namespace }}-dmo-validating-webhook"' - | \
+		$(TOOLBIN)/yq eval '(.webhooks.[].clientConfig.service.name) = "dmo-webhook-service"' - | \
+		$(TOOLBIN)/yq eval '(.webhooks.[].clientConfig.service.namespace) = "{{ .Release.Namespace }}"' - > $(ROOT_DIR)/charts/data-movement-operator/files/webhook-configs.yaml
 
 # Overwrite docker-build from docker.mk
 docker-build: generate source-build
@@ -55,7 +56,7 @@ docker-build: generate source-build
 
 .PHONY: wait_for_manager
 wait_for_manager: $(TOOLBIN)/kubectl
-	$(TOOLBIN)/kubectl wait --for=condition=available -n ${CONTROLLER_NAMESPACE} deployment/manager --timeout=120s
+	$(TOOLBIN)/kubectl wait --for=condition=available -n ${CONTROLLER_NAMESPACE} deployment/dmo-manager --timeout=120s
 
 .PHONY: run-integration-tests
 run-integration-tests: export DOCKER_HOSTNAME?=localhost:5000
@@ -64,7 +65,6 @@ run-integration-tests: export DOCKER_TAGNAME?=master
 run-integration-tests: export USE_MOCKUP_CONNECTOR?=true
 run-integration-tests: wait_for_manager
 	NO_SIMULATED_PROGRESS=true USE_EXISTING_CONTROLLER=true USE_EXISTING_CLUSTER=true go test ./... -v -run TestMotionAPIs -count 1
-	NO_SIMULATED_PROGRESS=true USE_EXISTING_CONTROLLER=true USE_EXISTING_CLUSTER=true go test ./... -v -run TestAPIs -count 1
 
 .PHONY: main.deps
 main.deps: generate fmt vet manifests

@@ -6,14 +6,14 @@ metadata:
   name: {{ template "fybrik.fullname" . }}-metrics-service
   labels:
     {{- include "fybrik.labels" . | nindent 4 }}
-    control-plane: controller-manager
+    control-plane: dmo-controller-manager
 spec:
   ports:
   - name: https
     port: 8443
     targetPort: https
   selector:
-    control-plane: controller-manager
+    control-plane: dmo-controller-manager
     {{- include "fybrik.selectorLabels" . | nindent 4 }}
 {{- end }}
 {{- end }}

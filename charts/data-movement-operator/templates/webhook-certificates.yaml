@@ -3,7 +3,7 @@
 apiVersion: {{ include "fybrik.certManagerApiVersion" . }}
 kind: Issuer
 metadata:
-  name: selfsigned-issuer
+  name: dmo-selfsigned-issuer
   namespace: {{ .Release.Namespace }}
 spec:
   selfSigned: {}
@@ -12,15 +12,15 @@ spec:
 apiVersion: {{ include "fybrik.certManagerApiVersion" . }}
 kind: Certificate
 metadata:
-  name: serving-cert
+  name: dmo-serving-cert
   namespace: {{ .Release.Namespace }}
 spec:
   dnsNames:
-  - webhook-service.{{ .Release.Namespace }}.svc
-  - webhook-service.{{ .Release.Namespace }}.svc.cluster.local
+  - dmo-webhook-service.{{ .Release.Namespace }}.svc
+  - dmo-webhook-service.{{ .Release.Namespace }}.svc.cluster.local
   issuerRef:
     kind: Issuer
-    name: selfsigned-issuer
-  secretName: webhook-server-cert
+    name: dmo-selfsigned-issuer
+  secretName: dmo-webhook-server-cert
 {{- end }}
 {{- end }}

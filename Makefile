@@ -1,6 +1,7 @@
 include Makefile.env
 export DOCKER_TAGNAME ?= master
 export KUBE_NAMESPACE ?= fybrik-system
+export BLUEPRINT_NAMESPACE?=fybrik-blueprints
 
 .PHONY: license
 license: $(TOOLBIN)/license_finder
@@ -14,11 +15,11 @@ docker-mirror-read:
 deploy: export VALUES_FILE?=charts/data-movement-operator/values.yaml
 deploy: $(TOOLBIN)/kubectl $(TOOLBIN)/helm
 	$(TOOLBIN)/kubectl create namespace $(KUBE_NAMESPACE) || true
+	$(TOOLBIN)/kubectl create namespace $(BLUEPRINT_NAMESPACE) || true
 	$(TOOLBIN)/helm install data-movement-operator charts/data-movement-operator --values $(VALUES_FILE) \
-               --namespace $(KUBE_NAMESPACE) --wait --timeout 120s
+               --namespace $(KUBE_NAMESPACE) --wait --timeout 30s
 
 .PHONY: test
-test: export BLUEPRINT_NAMESPACE?=fybrik-blueprints
 test: export CONTROLLER_NAMESPACE?=fybrik-system
 test: $(TOOLBIN)/etcd $(TOOLBIN)/kube-apiserver
 	go test -v ./...
@@ -37,7 +38,7 @@ run-integration-tests:
 	#$(MAKE) configure-vault
 	$(MAKE) -C modules helm
 	$(MAKE) -C modules helm-uninstall # Uninstalls the deployed tests from previous command
-	#$(MAKE) -C manager run-integration-tests
+	$(MAKE) -C manager run-integration-tests
 	$(MAKE) -C modules test
 
 .PHONY: run-deploy-tests
@@ -75,7 +76,7 @@ docker-build:
 .PHONY: docker-push
 docker-push:
 	$(MAKE) -C manager docker-push
-	#$(MAKE) -C test/dummy-mover docker-push # Deactivate dummy-mover for now until it's removed from fybrik main repository
+	$(MAKE) -C test/dummy-mover docker-push
 
 DOCKER_PUBLIC_HOSTNAME ?= ghcr.io
 DOCKER_PUBLIC_NAMESPACE ?= fybrik

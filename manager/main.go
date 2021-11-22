@@ -46,6 +46,8 @@ func run(namespace string, metricsAddr string, enableLeaderElection bool) int {
 
 	systemNamespaceSelector := fields.SelectorFromSet(fields.Set{"metadata.namespace": utils.GetSystemNamespace()})
 	workerNamespaceSelector := fields.SelectorFromSet(fields.Set{"metadata.namespace": blueprintNamespace})
+
+	setupLog.Info("Watching BatchTransfers and StreamTransfers", "namespace", workerNamespaceSelector)
 	selectorsByObject := cache.SelectorsByObject{
 		&corev1.ConfigMap{}:             {Field: systemNamespaceSelector},
 		&motionv1.BatchTransfer{}:       {Field: workerNamespaceSelector},

@@ -8,6 +8,9 @@ rules:
 - apiGroups:
   - ""
   resources:
+  - secrets
+  - configmaps
+  - events
   - persistentvolumeclaims
   - persistentvolumeclaims/finalizers
   verbs:

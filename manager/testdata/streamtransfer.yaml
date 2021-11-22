@@ -39,7 +39,4 @@ spec:
       algo: md5
   image: localhost:5000/fybrik-system/dummy-mover:master
   imagePullPolicy: "IfNotPresent"
-  maxFailedRetries: 0
-  successfulJobHistoryLimit: 3
-  failedJobHistoryLimit: 3
   suspend: false
