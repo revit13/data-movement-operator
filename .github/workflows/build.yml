@@ -134,16 +134,19 @@ jobs:
             branch="${GITHUB_REF#refs/heads/}"
             version=$branch
         fi
+        if [[ $version == releases/* ]] ;
+        then
+           releaseVersion="${GITHUB_REF#refs/heads/releases/}"
+           version="$releaseVersion-rc"
+        fi
         echo ::set-output name=version::$version
         echo ::set-output name=push_tag_event::$push_tag_event
-# Disable helm chart publishing until moved from fybrik repo
-#    - name: Publish images
-#      if: ${{ github.event_name != 'pull_request' }}
-#      env:
-#        DOCKER_PUBLIC_TAGNAME:  ${{ steps.version.outputs.version }}
-#      run: make docker-retag-and-push-public && make helm-push-public
-#    - name: Publish latest image tag on push tag event
-#      if: github.event_name != 'pull_request' && steps.version.outputs.push_tag_event == 'true'
-#      env:
-#        DOCKER_PUBLIC_TAGNAME: 'latest'
-#      run: make docker-retag-and-push-public && make helm-push-public
+    - name: Publish images
+      env:
+        DOCKER_PUBLIC_TAGNAME:  ${{ steps.version.outputs.version }}
+      run: make docker-retag-and-push-public && make helm-push-public
+    - name: Publish latest image tag on push tag event
+      if: steps.version.outputs.push_tag_event == 'true'
+      env:
+        DOCKER_PUBLIC_TAGNAME: 'latest'
+      run: make docker-retag-and-push-public && make helm-push-public
