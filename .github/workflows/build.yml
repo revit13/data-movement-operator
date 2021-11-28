@@ -110,6 +110,8 @@ jobs:
       DOCKER_NAMESPACE: fybrik-system
       DOCKER_USERNAME: ${{ github.actor }}
       DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+      DOCKER_PUBLIC_TAGNAME: latest
+      HELM_PUBLIC_TAGNAME: 0.0.0
     needs: [verify, test, integration-tests]
     if: ${{ github.event_name != 'pull_request' }}
     steps:
@@ -125,13 +127,10 @@ jobs:
     - run: docker images
     - id: version
       name: Infer version
+      if: ${{ (github.event_name != 'pull_request') && contains(github.ref, 'tags') }}
       run: |
-        echo "DOCKER_PUBLIC_TAGNAME=latest" >> $GITHUB_ENV
-        echo "HELM_PUBLIC_TAGNAME=0.0.0" >> $GITHUB_ENV
-        if: ${{ (github.event_name != 'pull_request') && contains(github.ref, 'tags') }}
-        run: |
-          echo "HELM_PUBLIC_TAGNAME=${GITHUB_REF##*/v}" >> $GITHUB_ENV
-          echo "DOCKER_PUBLIC_TAGNAME=${GITHUB_REF##*/v}" >> $GITHUB_ENV
+        echo "HELM_PUBLIC_TAGNAME=${GITHUB_REF##*/v}" >> $GITHUB_ENV
+        echo "DOCKER_PUBLIC_TAGNAME=${GITHUB_REF##*/v}" >> $GITHUB_ENV
     - name: Helm chart push
       if: ${{ (github.event_name != 'pull_request') }}
       run: |
