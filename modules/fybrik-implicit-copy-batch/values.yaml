@@ -12,7 +12,7 @@
 # app_cluster:
 labels: {}
 
-image: "ghcr.io/fybrik/mover:latest"
+image: "ghcr.io/fybrik/mover:master"
 imagePullPolicy: null
 noFinalizer: "true"
 

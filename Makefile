@@ -1,5 +1,5 @@
 include Makefile.env
-export DOCKER_TAGNAME ?= master
+export DOCKER_TAGNAME ?= latest
 export KUBE_NAMESPACE ?= fybrik-system
 export BLUEPRINT_NAMESPACE?=fybrik-blueprints
 
@@ -80,7 +80,7 @@ docker-push:
 
 DOCKER_PUBLIC_HOSTNAME ?= ghcr.io
 DOCKER_PUBLIC_NAMESPACE ?= fybrik
-DOCKER_PUBLIC_TAGNAME ?= master
+DOCKER_PUBLIC_TAGNAME ?= latest
 
 DOCKER_PUBLIC_NAMES := \
 	dmo-manager
@@ -99,7 +99,7 @@ docker-retag-and-push-public:
 
 .PHONY: helm-push-public
 helm-push-public:
-	DOCKER_HOSTNAME=${DOCKER_PUBLIC_HOSTNAME} DOCKER_NAMESPACE=${DOCKER_PUBLIC_NAMESPACE} DOCKER_TAGNAME=${DOCKER_PUBLIC_TAGNAME} make -C modules helm-chart-push
+	DOCKER_HOSTNAME=${DOCKER_PUBLIC_HOSTNAME} DOCKER_NAMESPACE=${DOCKER_PUBLIC_NAMESPACE} HELM_TAGNAME=${HELM_PUBLIC_TAGNAME} make -C modules helm-chart-push
 
 .PHONY: save-images
 save-images:
