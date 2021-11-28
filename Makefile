@@ -79,8 +79,8 @@ docker-push:
 	$(MAKE) -C test/dummy-mover docker-push
 
 DOCKER_PUBLIC_HOSTNAME ?= ghcr.io
-DOCKER_PUBLIC_NAMESPACE ?= fybrik
-DOCKER_PUBLIC_TAGNAME ?= master
+DOCKER_PUBLIC_NAMESPACE ?= revit13
+DOCKER_PUBLIC_TAGNAME ?= latest
 
 DOCKER_PUBLIC_NAMES := \
 	dmo-manager

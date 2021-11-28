@@ -135,5 +135,5 @@ jobs:
       if: ${{ (github.event_name != 'pull_request') }}
       run: |
         export HELM_EXPERIMENTAL_OCI=1
-        echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login -u "${{ github.actor }}" --password-stdin "${{ env.DOCKER_HOSTNAME }}"
+        echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login -u "${{ github.actor }}" --password-stdin "ghcr.io"
         make docker-retag-and-push-public && make helm-push-public
