@@ -109,7 +109,7 @@ jobs:
       DOCKER_HOSTNAME: "localhost:5000"
       DOCKER_NAMESPACE: fybrik-system
       DOCKER_USERNAME: ${{ github.actor }}
-      DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+      DOCKER_PASSWORD: ${{ secrets.MYPAT }}
       DOCKER_PUBLIC_TAGNAME: latest
       HELM_PUBLIC_TAGNAME: 0.0.0
     needs: [verify, test, integration-tests]
@@ -135,5 +135,5 @@ jobs:
       if: ${{ (github.event_name != 'pull_request') }}
       run: |
         export HELM_EXPERIMENTAL_OCI=1
-        echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login -u "${{ github.actor }}" --password-stdin "ghcr.io"
+        echo "${{ secrets.MYPAT }}" | helm registry login -u "${{ github.actor }}" --password-stdin "ghcr.io"
         make docker-retag-and-push-public && make helm-push-public
