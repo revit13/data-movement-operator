@@ -99,7 +99,7 @@ docker-retag-and-push-public:
 
 .PHONY: helm-push-public
 helm-push-public:
-	DOCKER_HOSTNAME=${DOCKER_PUBLIC_HOSTNAME} DOCKER_NAMESPACE=${DOCKER_PUBLIC_NAMESPACE} DOCKER_TAGNAME=${DOCKER_PUBLIC_TAGNAME} make -C modules helm-chart-push
+	DOCKER_HOSTNAME=${DOCKER_PUBLIC_HOSTNAME} DOCKER_NAMESPACE=${DOCKER_PUBLIC_NAMESPACE} DOCKER_TAGNAME=${HELM_PUBLIC_TAGNAME} make -C modules helm-chart-push
 
 .PHONY: save-images
 save-images:
@@ -110,3 +110,4 @@ include hack/make-rules/tools.mk
 include hack/make-rules/verify.mk
 include hack/make-rules/cluster.mk
 include hack/make-rules/vault.mk
+

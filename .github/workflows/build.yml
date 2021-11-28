@@ -126,27 +126,15 @@ jobs:
     - id: version
       name: Infer version
       run: |
-        version="${GITHUB_REF#refs/tags/v}"
-        push_tag_event='true'
-        if  [[ $version == refs/* ]] ;
-        then
-            push_tag_event='false'
-            branch="${GITHUB_REF#refs/heads/}"
-            version=$branch
-        fi
-        if [[ $version == releases/* ]] ;
-        then
-           releaseVersion="${GITHUB_REF#refs/heads/releases/}"
-           version="$releaseVersion-rc"
-        fi
-        echo ::set-output name=version::$version
-        echo ::set-output name=push_tag_event::$push_tag_event
-    - name: Publish images
-      env:
-        DOCKER_PUBLIC_TAGNAME:  ${{ steps.version.outputs.version }}
-      run: make docker-retag-and-push-public && make helm-push-public
-    - name: Publish latest image tag on push tag event
-      if: steps.version.outputs.push_tag_event == 'true'
-      env:
-        DOCKER_PUBLIC_TAGNAME: 'latest'
-      run: make docker-retag-and-push-public && make helm-push-public
+        echo "DOCKER_PUBLIC_TAGNAME=latest" >> $GITHUB_ENV
+        echo "HELM_PUBLIC_TAGNAME=0.0.0" >> $GITHUB_ENV
+        if: ${{ (github.event_name != 'pull_request') && contains(github.ref, 'tags') }}
+        run: |
+          echo "HELM_PUBLIC_TAGNAME=${GITHUB_REF##*/v}" >> $GITHUB_ENV
+          echo "DOCKER_PUBLIC_TAGNAME=${GITHUB_REF##*/v}" >> $GITHUB_ENV
+    - name: Helm chart push
+      if: ${{ (github.event_name != 'pull_request') }}
+      run: |
+        export HELM_EXPERIMENTAL_OCI=1
+        echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login -u "${{ github.actor }}" --password-stdin "${{ env.DOCKER_HOSTNAME }}"
+        make docker-retag-and-push-public && make helm-push-public
