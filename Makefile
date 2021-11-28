@@ -84,7 +84,7 @@ DOCKER_PUBLIC_TAGNAME ?= latest
 
 DOCKER_PUBLIC_NAMES := \
 	dmo-manager
-#	dummy-mover # Deactivate dummy-mover for now until it's removed from fybrik main repository
+	dummy-mover # Deactivate dummy-mover for now until it's removed from fybrik main repository
 
 define do-docker-retag-and-push-public
 	for name in ${DOCKER_PUBLIC_NAMES}; do \
