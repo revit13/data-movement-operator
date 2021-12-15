@@ -36,23 +36,37 @@ spec:
       vault:
 {{ toYaml .Values.copy.destination.vault.write | indent 8 }}
       {{ end }}
-  {{ if .Values.copy.transformations }}
+  {{- if .Values.copy.transformations }}
   transformation:
-  {{ range .Values.copy.transformations }}
-  {{ if eq .id "redact-ID" }}
-  - action: "RedactColumns"
-    name: "redacting column: {{ .args.column_name }}"
-    columns: [ {{ .args.column_name | quote }} ]
-    options:
-      redactValue: "XXXXXX"
-  {{ end }}
-  {{ if eq .id "removed-ID" }}
-  - action: "RemoveColumns"
-    name: "redacting column: {{ .args.column_name }}"
-    columns: [ "{{ .args.column_name }}" ]
-  {{ end }}
-  {{ end }}
-  {{ end }}
+  {{- $redactColumns := list -}}
+  {{- $removeColumns := list -}}
+  {{- range .Values.copy.transformations -}}
+    {{- if eq .name "RedactAction" -}}
+      {{- $redactColumns = .RedactAction.columns -}}
+    {{- end -}}
+    {{- if eq .name "RemoveAction" -}}
+      {{- $removeColumns = .RemoveAction.columns -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if $redactColumns }}
+    - action: "RedactColumns"
+      name: "redacting columns: {{ $redactColumns }}"
+      columns:
+        {{- range $redactColumns}}
+        - {{ . }}
+        {{- end }}
+      options:
+        redactValue: "XXXXX"
+  {{- end }}
+  {{- if $removeColumns }}
+    - action: "RemoveColumns"
+      name: "removing columns: {{ $removeColumns }}"
+      columns:
+        {{- range $removeColumns}}
+        - {{ . }}
+        {{- end }}
+  {{- end }}
+  {{- end }}
   triggerInterval: "10 seconds"
   {{ if .Values.image }}
   image: {{ .Values.image | quote }}
