@@ -18,12 +18,28 @@ helm repo update
 helm install data-movement-operator fybrik-charts/data-movement-operator -n fybrik-system --wait
 ```
 
-Installing the fybrik module:
+## Register as a Fybrik module
 
+To register the movement functionality as a Fybrik module apply `modules/implicit-copy-batch-module.yaml` or `modules/implicit-copy-stream-module.yaml` to the `fybrik-system` namespace of your cluster.
+
+To install the latest release run:
+
+```bash
+kubectl apply -f https://github.com/fybrik/data-movement-operator/releases/latest/download/modules/implicit-copy-batch-module.yaml -n fybrik-system
+kubectl apply -f https://github.com/fybrik/data-movement-operator/releases/latest/download/modules/implicit-copy-stream-module.yaml -n fybrik-system
 ```
-kubectl apply -f https://raw.githubusercontent.com/fybrik/data-movement-operator/master/modules/implicit-copy-batch-module.yaml -n fybrik-system
-kubectl apply -f https://raw.githubusercontent.com/fybrik/data-movement-operator/master/modules/implicit-copy-stream-module.yaml -n fybrik-system
-```
+
+### Version compatbility matrix
+
+| Fybrik           | CBM     | Command
+| ---              | ---     | ---
+| 0.5.x            | 0.5.x   | `https://github.com/fybrik/data-movement-operator/releases/download/v0.5.0/modules/implicit-copy-batch-module.yaml`
+| master           | master  | `https://raw.githubusercontent.com/fybrik/data-movement-operator/master/modules/implicit-copy-batch-module.yaml`
+
+| Fybrik           | CSM     | Command
+| ---              | ---     | ---
+| 0.5.x            | 0.5.x   | `https://github.com/fybrik/data-movement-operator/releases/download/v0.5.0/modules/implicit-copy-stream-module.yaml`
+| master           | master  | `https://raw.githubusercontent.com/fybrik/data-movement-operator/master/modules/implicit-copy-stream-module.yaml`
 
 ## Development version using the repo
 1. Check out git repository
