@@ -11,7 +11,6 @@ jobs:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0
-        token: ${{ secrets.TAG_PSAT }}
     - name: Install yq
       run: make ./hack/tools/bin/yq
     - run: RELEASE=${{ steps.version.outputs.version }} ./hack/release.sh
