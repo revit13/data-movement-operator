@@ -7,6 +7,7 @@
 
 ${TOOLBIN}/yq eval --inplace ".version = \"$RELEASE\"" ./charts/data-movement-operator/Chart.yaml
 ${TOOLBIN}/yq eval --inplace ".appVersion = \"$RELEASE\"" ./charts/data-movement-operator/Chart.yaml
+${TOOLBIN}/yq eval --inplace ".global.tag = \"$RELEASE\"" ./charts/data-movement-operator/values.yaml
 
 ${TOOLBIN}/yq eval --inplace ".version = \"$RELEASE\"" ./modules/fybrik-implicit-copy-batch/Chart.yaml
 ${TOOLBIN}/yq eval --inplace ".version = \"$RELEASE\"" ./modules/fybrik-implicit-copy-stream/Chart.yaml
