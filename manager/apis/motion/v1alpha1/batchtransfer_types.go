@@ -521,9 +521,9 @@ type BatchTransferList struct {
 const (
 	BatchtransferFinalizer       = "batchtransfer.finalizers.ibm.com"
 	BatchtransferFinalizerBinary = "/finalizer"
-	BatchtransferBinary          = "/mover"
+	BatchtransferBinary          = "/dmo-manager"
 	ConfigSecretVolumeName       = "conf-secret"
-	ConfigSecretMountPath        = "/etc/mover"
+	ConfigSecretMountPath        = "/etc/dmo-manager"
 )
 
 // register above definition...

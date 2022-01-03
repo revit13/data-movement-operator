@@ -3,11 +3,11 @@ ARG REGISTRY=docker.io/library
 FROM ${REGISTRY}/alpine:latest
 WORKDIR /
 
-RUN echo -e '#!/bin/sh\necho "Running dummy batch mover."' > /mover && \
-  chmod +x /mover && \
-  echo -e '#!/bin/sh\necho "Running dummy stream mover."' > /stream && \
+RUN echo -e '#!/bin/sh\necho "Running dummy batch manager."' > /manager && \
+  chmod +x /manager && \
+  echo -e '#!/bin/sh\necho "Running dummy stream manager."' > /stream && \
   chmod +x /stream && \
   echo -e '#!/bin/sh\necho "Running dummy finalizer."' > /finalizer && \
   chmod +x /finalizer
 
-ENTRYPOINT ["/mover"]
+ENTRYPOINT ["/manager"]

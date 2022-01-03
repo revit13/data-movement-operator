@@ -1,4 +1,4 @@
-image: "localhost:5000/fybrik-system/mover:latest"
+image: "localhost:5000/fybrik-system/dmo-manager:latest"
 imagePullPolicy: "IfNotPresent"
 noFinalizer: "true"
 
