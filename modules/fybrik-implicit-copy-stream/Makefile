@@ -6,7 +6,7 @@ DOCKER_NAME := fybrik-implicit-copy-stream
 DOCKER_TAGNAME ?= 0.1.0
 HELM_VALUES := \
 	--values values.yaml.sample \
-	--set image=${DOCKER_HOSTNAME}/${DOCKER_NAMESPACE}/mover:${DOCKER_TAGNAME}
+	--set image=${DOCKER_HOSTNAME}/${DOCKER_NAMESPACE}/dmo-manager:${DOCKER_TAGNAME}
 
 include $(ROOT_DIR)/Makefile.env
 include $(ROOT_DIR)/hack/make-rules/docker.mk

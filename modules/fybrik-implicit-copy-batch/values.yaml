@@ -12,8 +12,8 @@
 # app_cluster:
 labels: {}
 
-image: "ghcr.io/fybrik/mover:latest"
-imagePullPolicy: null
+image: "ghcr.io/revit13/dmo-manager:0.5.0"
+imagePullPolicy: Always
 noFinalizer: "true"
 
 # copies from source

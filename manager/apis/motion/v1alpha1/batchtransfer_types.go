@@ -36,7 +36,7 @@ type BatchTransferSpec struct {
 	// +optional
 	Schedule string `json:"schedule,omitempty"`
 
-	// Image that should be used for the actual batch job. This is usually a datamover
+	// Image that should be used for the actual batch job. This is usually a datadmo-manager
 	// image. This property will be defaulted by the webhook if not set.
 	// +optional
 	Image string `json:"image"`
@@ -521,9 +521,9 @@ type BatchTransferList struct {
 const (
 	BatchtransferFinalizer       = "batchtransfer.finalizers.ibm.com"
 	BatchtransferFinalizerBinary = "/finalizer"
-	BatchtransferBinary          = "/mover"
+	BatchtransferBinary          = "/dmo-manager"
 	ConfigSecretVolumeName       = "conf-secret"
-	ConfigSecretMountPath        = "/etc/mover"
+	ConfigSecretMountPath        = "/etc/dmo-manager"
 )
 
 // register above definition...

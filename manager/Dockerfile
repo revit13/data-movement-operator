@@ -8,3 +8,5 @@ COPY manager /
 USER 1001
 
 ENTRYPOINT ["/manager"]
+#CMD tail -f /dev/null
+

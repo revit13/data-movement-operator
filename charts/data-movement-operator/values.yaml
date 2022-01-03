@@ -21,7 +21,7 @@ global:
   hub: ghcr.io/fybrik
   # Default tag for Fybrik images.
   # If no value is set, the chart's appVersion will be used.
-  tag: ""
+  tag: 0.5.0 
   # Default image pull policy for Fybrik images
   # Default behavior: latest images will be Always else IfNotPresent.
   # ref: https://kubernetes.io/docs/concepts/containers/images/#updating-images
@@ -46,7 +46,7 @@ manager:
   # Image name or a hub/image[:tag]
   image: "dmo-manager"
   # Overrides global.imagePullPolicy
-  imagePullPolicy: ""
+  imagePullPolicy: Always
 
   # Set to true to enable socat in the manager pod to forward
   # traffic from a localhost registry. Used only for development.
