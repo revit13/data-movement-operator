@@ -3,7 +3,7 @@ all: helm-all
 
 ROOT_DIR := ../..
 DOCKER_NAME := fybrik-implicit-copy-batch
-DOCKER_TAGNAME := 0.1.0
+DOCKER_TAGNAME ?= master 
 HELM_VALUES := --values values.yaml.sample
 
 include $(ROOT_DIR)/Makefile.env
