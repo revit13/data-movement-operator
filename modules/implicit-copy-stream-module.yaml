@@ -1,36 +1,34 @@
 # Copyright 2020 IBM Corp.
 # SPDX-License-Identifier: Apache-2.0
-
----
 apiVersion: app.fybrik.io/v1alpha1
 kind: FybrikModule
 metadata:
   name: implicit-copy-stream
   labels:
     name: implicit-copy-stream
-    version: 0.1.0 
+    version: 0.0.0-master
 spec:
   type: service
   capabilities:
     - capability: copy
       supportedInterfaces:
-      - source: 
-          protocol: kafka    
-          dataformat: json
-        sink: 
-          protocol: s3
-          dataformat: parquet
-      - source:
-          protocol: kafka
-          dataformat: avro
-        sink:
-          protocol: s3
-          dataformat: parquet
+        - source:
+            protocol: kafka
+            dataformat: json
+          sink:
+            protocol: s3
+            dataformat: parquet
+        - source:
+            protocol: kafka
+            dataformat: avro
+          sink:
+            protocol: s3
+            dataformat: parquet
       actions:
         - name: RedactAction
         - name: RemoveAction
   chart:
-    name: ghcr.io/fybrik/fybrik-implicit-copy-stream:0.1.0
+    name: ghcr.io/fybrik/fybrik-implicit-copy-stream:0.0.0-master
   statusIndicators:
     - kind: StreamTransfer
       successCondition: status.status == SUCCEEDED

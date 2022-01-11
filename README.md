@@ -10,12 +10,14 @@ The data-movement-operator contains the movement functionality (batch and stream
 
 As this is an extension to the fybrik please make sure to install the [fybrik](https://github.com/fybrik/fybrik) and it's dependencies before continuing.
 
-## Latest master branch
-Installing the controller:
+## Installing the controller
+
+Version 0.5.0 of the controller is available in Fybrik 0.5.x.
+
+Install latest development version from GitHub:
 ```
-helm repo add fybrik-charts https://fybrik.github.io/charts
-helm repo update
-helm install data-movement-operator fybrik-charts/data-movement-operator -n fybrik-system --wait
+git clone https://github.com/fybrik/data-movement-operator.git
+helm install data-movement-operator data-movement-operator/charts/data-movement-operator -n fybrik-system --wait
 ```
 
 ## Register as a Fybrik module
