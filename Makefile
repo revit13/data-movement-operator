@@ -1,5 +1,5 @@
 include Makefile.env
-export DOCKER_TAGNAME ?= master
+export DOCKER_TAGNAME ?= 0.0.0
 export KUBE_NAMESPACE ?= fybrik-system
 export BLUEPRINT_NAMESPACE?=fybrik-blueprints
 
