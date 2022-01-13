@@ -27,8 +27,8 @@ To register the movement functionality as a Fybrik module apply `modules/implici
 To install the latest release run:
 
 ```bash
-kubectl apply -f https://github.com/fybrik/data-movement-operator/releases/latest/download/modules/implicit-copy-batch-module.yaml -n fybrik-system
-kubectl apply -f https://github.com/fybrik/data-movement-operator/releases/latest/download/modules/implicit-copy-stream-module.yaml -n fybrik-system
+kubectl apply -f https://github.com/fybrik/data-movement-operator/releases/latest/download/implicit-copy-batch-module.yaml -n fybrik-system
+kubectl apply -f https://github.com/fybrik/data-movement-operator/releases/latest/download/implicit-copy-stream-module.yaml -n fybrik-system
 ```
 
 ### Version compatbility matrix
@@ -38,12 +38,12 @@ CSM - copy stream module
 
 | Fybrik           | CBM     | Mover   | Command
 | ---              | ---     | ---     | ---
-| 0.5.x            | 0.5.x   | 0.5.x   | `https://github.com/fybrik/data-movement-operator/releases/download/v0.5.0/modules/implicit-copy-batch-module.yaml`
+| 0.5.x            | 0.5.x   | 0.5.x   | `https://github.com/fybrik/data-movement-operator/releases/download/v0.5.0/implicit-copy-batch-module.yaml`
 | master           | master  | master  | `https://raw.githubusercontent.com/fybrik/data-movement-operator/master/modules/implicit-copy-batch-module.yaml`
 
 | Fybrik           | CSM     | Mover   | Command
 | ---              | ---     | ---     | ---
-| 0.5.x            | 0.5.x   | 0.5.x   | `https://github.com/fybrik/data-movement-operator/releases/download/v0.5.0/modules/implicit-copy-stream-module.yaml`
+| 0.5.x            | 0.5.x   | 0.5.x   | `https://github.com/fybrik/data-movement-operator/releases/download/v0.5.0/implicit-copy-stream-module.yaml`
 | master           | master  | master  | `https://raw.githubusercontent.com/fybrik/data-movement-operator/master/modules/implicit-copy-stream-module.yaml`
 
 ## Development version using the repo
