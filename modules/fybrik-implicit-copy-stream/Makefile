@@ -3,7 +3,7 @@ all: helm-all
 
 ROOT_DIR := ../..
 DOCKER_NAME := fybrik-implicit-copy-stream
-DOCKER_TAGNAME ?= master 
+DOCKER_TAGNAME ?= 0.0.0
 HELM_VALUES := \
 	--values values.yaml.sample \
 	--set image=${DOCKER_HOSTNAME}/${DOCKER_NAMESPACE}/mover:${DOCKER_TAGNAME}
