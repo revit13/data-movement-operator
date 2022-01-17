@@ -71,7 +71,7 @@ func run(namespace string, metricsAddr string, enableLeaderElection bool) int {
 		Namespace:          namespace,
 		MetricsBindAddress: metricsAddr,
 		LeaderElection:     enableLeaderElection,
-		LeaderElectionID:   "fybrik-operator-leader-election",
+		LeaderElectionID:   "data-movement-operator-leader-election",
 		Port:               9443,
 		NewCache:           cache.BuilderWithOptions(cache.Options{SelectorsByObject: selectorsByObject}),
 	})
