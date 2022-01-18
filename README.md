@@ -12,7 +12,11 @@ As this is an extension to the fybrik please make sure to install the [fybrik](h
 
 ## Installing the controller
 
-Version 0.5.0 of the controller is available in Fybrik 0.5.x.
+Version 0.5.0 of the data movement operator (DMO) is available in Fybrik 0.5.x.
+
+| Fybrik           | DMO
+| ---              | ---
+| 0.6.x            | 0.6.x
 
 Install latest development version from GitHub:
 ```
@@ -39,11 +43,13 @@ CSM - copy stream module
 | Fybrik           | CBM     | Mover   | Command
 | ---              | ---     | ---     | ---
 | 0.5.x            | 0.5.x   | 0.5.x   | `https://github.com/fybrik/data-movement-operator/releases/download/v0.5.0/implicit-copy-batch-module.yaml`
+| 0.6.x            | 0.6.x   | 0.5.x   | `https://github.com/fybrik/data-movement-operator/releases/download/v0.6.0/implicit-copy-batch-module.yaml`
 | master           | master  | master  | `https://raw.githubusercontent.com/fybrik/data-movement-operator/master/modules/implicit-copy-batch-module.yaml`
 
 | Fybrik           | CSM     | Mover   | Command
 | ---              | ---     | ---     | ---
 | 0.5.x            | 0.5.x   | 0.5.x   | `https://github.com/fybrik/data-movement-operator/releases/download/v0.5.0/implicit-copy-stream-module.yaml`
+| 0.6.x            | 0.6.x   | 0.5.x   | `https://github.com/fybrik/data-movement-operator/releases/download/v0.6.0/implicit-copy-stream-module.yaml`
 | master           | master  | master  | `https://raw.githubusercontent.com/fybrik/data-movement-operator/master/modules/implicit-copy-stream-module.yaml`
 
 ## Development version using the repo
