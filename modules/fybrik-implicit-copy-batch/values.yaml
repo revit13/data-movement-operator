@@ -40,6 +40,6 @@ copy:
 #    vault: {}
 
   transformations: []
-  readDataType: "LogData"
-  writeDataType: "LogData"
-  writeOperation: "Overwrite"
+readDataType: "LogData"
+writeDataType: "LogData"
+writeOperation: "Overwrite"
