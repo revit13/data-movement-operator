@@ -4,11 +4,12 @@
 package utils
 
 import (
-	motionv1 "fybrik.io/data-movement-controller/manager/apis/motion/v1alpha1"
 	"github.com/onsi/gomega"
 	kbatch "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+
+	motionv1 "fybrik.io/data-movement-controller/manager/apis/motion/v1alpha1"
 )
 
 // Creates a scheme that can be used in unit tests

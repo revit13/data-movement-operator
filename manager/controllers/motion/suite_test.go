@@ -11,15 +11,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/onsi/gomega/gexec"
-	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/cache"
-	"sigs.k8s.io/controller-runtime/pkg/envtest/printer"
-
-	motionv1 "fybrik.io/data-movement-controller/manager/apis/motion/v1alpha1"
-	"fybrik.io/data-movement-controller/manager/controllers/utils"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/onsi/gomega/gexec"
 	kbatch "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	v1 "k8s.io/api/core/v1"
@@ -27,10 +21,16 @@ import (
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
+	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/cache"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
+	"sigs.k8s.io/controller-runtime/pkg/envtest/printer"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
+
+	motionv1 "fybrik.io/data-movement-controller/manager/apis/motion/v1alpha1"
+	"fybrik.io/data-movement-controller/manager/controllers/utils"
 	// +kubebuilder:scaffold:imports
 )
 

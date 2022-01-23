@@ -6,8 +6,7 @@ package motion
 import (
 	"context"
 	"fmt"
-	"fybrik.io/data-movement-controller/manager/controllers"
-	"fybrik.io/data-movement-controller/pkg/environment"
+
 	apps "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
@@ -16,6 +15,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller"
 
 	motionv1 "fybrik.io/data-movement-controller/manager/apis/motion/v1alpha1"
+	"fybrik.io/data-movement-controller/manager/controllers"
+	"fybrik.io/data-movement-controller/pkg/environment"
 )
 
 // StreamTransferReconciler reconciles a StreamTransfer object

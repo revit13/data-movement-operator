@@ -6,9 +6,7 @@ package motion
 import (
 	"context"
 	"fmt"
-	motionv1 "fybrik.io/data-movement-controller/manager/apis/motion/v1alpha1"
-	"fybrik.io/data-movement-controller/manager/controllers"
-	"fybrik.io/data-movement-controller/pkg/environment"
+
 	"github.com/go-logr/logr"
 	kbatch "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -18,6 +16,10 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller"
+
+	motionv1 "fybrik.io/data-movement-controller/manager/apis/motion/v1alpha1"
+	"fybrik.io/data-movement-controller/manager/controllers"
+	"fybrik.io/data-movement-controller/pkg/environment"
 )
 
 // A reconciler can be used to base reconcilers of Transfers on.

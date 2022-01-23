@@ -5,16 +5,11 @@ package main
 
 import (
 	"flag"
-	"fybrik.io/data-movement-controller/manager/controllers/utils"
 	"os"
 
-	"fybrik.io/data-movement-controller/manager/controllers"
-	"fybrik.io/data-movement-controller/pkg/environment"
-
+	kapps "k8s.io/api/apps/v1"
+	kbatch "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
-
-	"fybrik.io/data-movement-controller/manager/controllers/motion"
-
 	"k8s.io/apimachinery/pkg/fields"
 	kruntime "k8s.io/apimachinery/pkg/runtime"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
@@ -23,8 +18,10 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
 	motionv1 "fybrik.io/data-movement-controller/manager/apis/motion/v1alpha1"
-	kapps "k8s.io/api/apps/v1"
-	kbatch "k8s.io/api/batch/v1"
+	"fybrik.io/data-movement-controller/manager/controllers"
+	"fybrik.io/data-movement-controller/manager/controllers/motion"
+	"fybrik.io/data-movement-controller/manager/controllers/utils"
+	"fybrik.io/data-movement-controller/pkg/environment"
 )
 
 var (

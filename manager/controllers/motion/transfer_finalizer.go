@@ -6,11 +6,12 @@ package motion
 import (
 	"context"
 
-	motionv1 "fybrik.io/data-movement-controller/manager/apis/motion/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
+
+	motionv1 "fybrik.io/data-movement-controller/manager/apis/motion/v1alpha1"
 )
 
 // Add a finalizer to the given transfer and update it.

@@ -7,8 +7,9 @@ import (
 	"os"
 
 	"emperror.dev/errors"
-	motionv1 "fybrik.io/data-movement-controller/manager/apis/motion/v1alpha1"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
+
+	motionv1 "fybrik.io/data-movement-controller/manager/apis/motion/v1alpha1"
 )
 
 // This function sets up all motion controllers including the webhooks given a controller manager.
