@@ -15,7 +15,7 @@ const DefaultControllerNamespace = "fybrik-system"
 
 func GetBlueprintNamespace() string {
 	blueprintNamespace := os.Getenv("BLUEPRINT_NAMESPACE")
-	if len(blueprintNamespace) == 0 {
+	if blueprintNamespace == "" {
 		blueprintNamespace = DefaultBlueprintNamespace
 	}
 	return blueprintNamespace
@@ -23,7 +23,7 @@ func GetBlueprintNamespace() string {
 
 func GetControllerNamespace() string {
 	controllerNamespace := os.Getenv("CONTROLLER_NAMESPACE")
-	if len(controllerNamespace) == 0 {
+	if controllerNamespace == "" {
 		controllerNamespace = DefaultControllerNamespace
 	}
 	return controllerNamespace

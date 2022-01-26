@@ -16,9 +16,11 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 )
 
-func (r *StreamTransfer) SetupWebhookWithManager(mgr ctrl.Manager) error {
+const streamTransferImage = "ghcr.io/fybrik/mover:latest"
+
+func (streamTransfer *StreamTransfer) SetupWebhookWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewWebhookManagedBy(mgr).
-		For(r).
+		For(streamTransfer).
 		Complete()
 }
 
@@ -29,51 +31,51 @@ func (r *StreamTransfer) SetupWebhookWithManager(mgr ctrl.Manager) error {
 var _ webhook.Defaulter = &StreamTransfer{}
 
 // Default implements webhook.Defaulter so a webhook will be registered for the type
-func (r *StreamTransfer) Default() {
-	log.Printf("Defaulting streamtransfer %s", r.Name)
-	if r.Spec.Image == "" {
+func (streamTransfer *StreamTransfer) Default() {
+	log.Printf("Defaulting streamtransfer %s", streamTransfer.Name)
+	if streamTransfer.Spec.Image == "" {
 		// TODO check if can be removed after upgrading controller-gen to 0.5.0
-		r.Spec.Image = "ghcr.io/fybrik/mover:latest"
+		streamTransfer.Spec.Image = streamTransferImage
 	}
 
-	if r.Spec.ImagePullPolicy == "" {
+	if streamTransfer.Spec.ImagePullPolicy == "" {
 		// TODO check if can be removed after upgrading controller-gen to 0.5.0
-		r.Spec.ImagePullPolicy = v1.PullIfNotPresent
+		streamTransfer.Spec.ImagePullPolicy = v1.PullIfNotPresent
 	}
 
-	if r.Spec.SecretProviderURL == "" {
+	if streamTransfer.Spec.SecretProviderURL == "" {
 		if env, b := os.LookupEnv("SECRET_PROVIDER_URL"); b {
-			r.Spec.SecretProviderURL = env
+			streamTransfer.Spec.SecretProviderURL = env
 		}
 	}
 
-	if r.Spec.SecretProviderRole == "" {
+	if streamTransfer.Spec.SecretProviderRole == "" {
 		if env, b := os.LookupEnv("SECRET_PROVIDER_ROLE"); b {
-			r.Spec.SecretProviderRole = env
+			streamTransfer.Spec.SecretProviderRole = env
 		}
 	}
 
-	if r.Spec.TriggerInterval == "" {
-		r.Spec.TriggerInterval = "5 seconds"
+	if streamTransfer.Spec.TriggerInterval == "" {
+		streamTransfer.Spec.TriggerInterval = "5 seconds"
 	}
 
-	defaultDataStoreDescription(&r.Spec.Source)
-	defaultDataStoreDescription(&r.Spec.Destination)
+	defaultDataStoreDescription(&streamTransfer.Spec.Source)
+	defaultDataStoreDescription(&streamTransfer.Spec.Destination)
 
-	if r.Spec.WriteOperation == "" {
-		r.Spec.WriteOperation = Append
+	if streamTransfer.Spec.WriteOperation == "" {
+		streamTransfer.Spec.WriteOperation = Append
 	}
 
-	if r.Spec.DataFlowType == "" {
-		r.Spec.DataFlowType = Stream
+	if streamTransfer.Spec.DataFlowType == "" {
+		streamTransfer.Spec.DataFlowType = Stream
 	}
 
-	if r.Spec.ReadDataType == "" {
-		r.Spec.ReadDataType = ChangeData
+	if streamTransfer.Spec.ReadDataType == "" {
+		streamTransfer.Spec.ReadDataType = ChangeData
 	}
 
-	if r.Spec.WriteDataType == "" {
-		r.Spec.WriteDataType = LogData
+	if streamTransfer.Spec.WriteDataType == "" {
+		streamTransfer.Spec.WriteDataType = LogData
 	}
 }
 
@@ -83,39 +85,40 @@ func (r *StreamTransfer) Default() {
 var _ webhook.Validator = &StreamTransfer{}
 
 // ValidateCreate implements webhook.Validator so a webhook will be registered for the type
-func (r *StreamTransfer) ValidateCreate() error {
-	log.Printf("Validating streamtransfer %s for creation", r.Name)
+func (streamTransfer *StreamTransfer) ValidateCreate() error {
+	log.Printf("Validating streamtransfer %s for creation", streamTransfer.Name)
 
-	return r.validateStreamTransfer()
+	return streamTransfer.validateStreamTransfer()
 }
 
 // ValidateUpdate implements webhook.Validator so a webhook will be registered for the type
-func (r *StreamTransfer) ValidateUpdate(old runtime.Object) error {
-	log.Printf("Validating streamtransfer %s for update", r.Name)
+func (streamTransfer *StreamTransfer) ValidateUpdate(old runtime.Object) error {
+	log.Printf("Validating streamtransfer %s for update", streamTransfer.Name)
 
-	return r.validateStreamTransfer()
+	return streamTransfer.validateStreamTransfer()
 }
 
 // ValidateDelete implements webhook.Validator so a webhook will be registered for the type
-func (r *StreamTransfer) ValidateDelete() error {
-	log.Printf("Validating streamtransfer %s for deletion", r.Name)
+func (streamTransfer *StreamTransfer) ValidateDelete() error {
+	log.Printf("Validating streamtransfer %s for deletion", streamTransfer.Name)
 
 	// TODO(user): fill in your validation logic upon object deletion.
 	return nil
 }
 
-func (r *StreamTransfer) validateStreamTransfer() error {
+func (streamTransfer *StreamTransfer) validateStreamTransfer() error {
 	var allErrs field.ErrorList
 	specField := field.NewPath("spec")
 
-	if r.Spec.DataFlowType == Batch {
-		allErrs = append(allErrs, field.Invalid(field.NewPath("spec").Child("dataFlowType"), r.Spec.DataFlowType, "'dataFlowType' must be 'Stream' for a StreamTransfer!"))
+	if streamTransfer.Spec.DataFlowType == Batch {
+		allErrs = append(allErrs, field.Invalid(field.NewPath("spec").Child("dataFlowType"),
+			streamTransfer.Spec.DataFlowType, "'dataFlowType' must be 'Stream' for a StreamTransfer!"))
 	}
 
-	if err := validateDataStore(specField.Child("source"), &r.Spec.Source); err != nil {
+	if err := validateDataStore(specField.Child("source"), &streamTransfer.Spec.Source); err != nil {
 		allErrs = append(allErrs, err...)
 	}
-	if err := validateDataStore(specField.Child("destination"), &r.Spec.Destination); err != nil {
+	if err := validateDataStore(specField.Child("destination"), &streamTransfer.Spec.Destination); err != nil {
 		allErrs = append(allErrs, err...)
 	}
 
@@ -125,5 +128,5 @@ func (r *StreamTransfer) validateStreamTransfer() error {
 
 	return apierrors.NewInvalid(
 		schema.GroupKind{Group: "motion.fybrik.io", Kind: "BatchTransfer"},
-		r.Name, allErrs)
+		streamTransfer.Name, allErrs)
 }

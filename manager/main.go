@@ -24,6 +24,11 @@ import (
 	"fybrik.io/data-movement-controller/pkg/environment"
 )
 
+const (
+	managerPort   = 9443
+	listeningPort = 8085
+)
+
 var (
 	scheme   = kruntime.NewScheme()
 	setupLog = ctrl.Log.WithName("setup")
@@ -36,7 +41,7 @@ func init() {
 	_ = kapps.AddToScheme(scheme)
 }
 
-func run(namespace string, metricsAddr string, enableLeaderElection bool) int {
+func run(namespace, metricsAddr string, enableLeaderElection bool) int {
 	setupLog.Info("creating manager")
 
 	blueprintNamespace := utils.GetBlueprintNamespace()
@@ -69,7 +74,7 @@ func run(namespace string, metricsAddr string, enableLeaderElection bool) int {
 		MetricsBindAddress: metricsAddr,
 		LeaderElection:     enableLeaderElection,
 		LeaderElectionID:   "data-movement-operator-leader-election",
-		Port:               9443,
+		Port:               managerPort,
 		NewCache:           cache.BuilderWithOptions(cache.Options{SelectorsByObject: selectorsByObject}),
 	})
 	if err != nil {
@@ -97,7 +102,7 @@ func main() {
 	var namespace string
 	var metricsAddr string
 	var enableLeaderElection bool
-	address := utils.ListeningAddress(8085)
+	address := utils.ListeningAddress(listeningPort)
 
 	flag.StringVar(&metricsAddr, "metrics-bind-addr", address, "The address the metric endpoint binds to.")
 	flag.BoolVar(&enableLeaderElection, "leader-elect", false,

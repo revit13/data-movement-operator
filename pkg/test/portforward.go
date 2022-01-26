@@ -33,7 +33,7 @@ func StartCmdAndStreamOutput(cmd *exec.Cmd) (stdout, stderr io.ReadCloser, err e
 
 // runPortForward runs port-forward, warning, this may need root functionality on some systems.
 // The function was inspired from kubernetes e2e framework
-func RunPortForward(ns string, svcName string, port int) (string, error) {
+func RunPortForward(ns, svcName string, port int) (string, error) {
 	/* #nosec G204 */
 	// Avoid "Subprocess launched with variable" error
 	cmd := exec.Command("kubectl", "-n", ns, "port-forward", "svc/"+svcName, ":"+strconv.Itoa(port))

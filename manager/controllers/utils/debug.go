@@ -11,10 +11,10 @@ import (
 // PrintStructure prints the structure in a textual format
 func PrintStructure(argStruct interface{}, log logr.Logger, argName string) {
 	log.Info(argName + ":")
-	yaml, err := yaml.Marshal(argStruct)
+	yamlMarsh, err := yaml.Marshal(argStruct)
 	if err != nil {
 		log.Info("\t Error printing " + argName + "\n")
 		return
 	}
-	log.Info("\t" + string(yaml))
+	log.Info("\t" + string(yamlMarsh))
 }

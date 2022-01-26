@@ -18,6 +18,8 @@ import (
 	motionv1 "fybrik.io/data-movement-controller/manager/apis/motion/v1alpha1"
 )
 
+const sourceTruststoreName = "source-truststore"
+
 // Returns the volume configuration for a BatchTransfer.
 // This includes the configuration secret as well as
 // possible secrets that have to be mounted that contain trust stores
@@ -47,7 +49,7 @@ func VolumeConfiguration(batchTransfer *motionv1.BatchTransfer) ([]v1.Volume, []
 	if batchTransfer.Spec.Source.Kafka != nil {
 		if batchTransfer.Spec.Source.Kafka.SslTruststoreSecret != "" {
 			volumes = append(volumes, v1.Volume{
-				Name: "source-truststore",
+				Name: sourceTruststoreName,
 				VolumeSource: v1.VolumeSource{
 					Secret: &v1.SecretVolumeSource{
 						SecretName: batchTransfer.Spec.Source.Kafka.SslTruststoreSecret,
@@ -55,14 +57,14 @@ func VolumeConfiguration(batchTransfer *motionv1.BatchTransfer) ([]v1.Volume, []
 				},
 			})
 			volumeMounts = append(volumeMounts, v1.VolumeMount{
-				Name:      "source-truststore",
+				Name:      sourceTruststoreName,
 				MountPath: path.Dir(batchTransfer.Spec.Source.Kafka.SslTruststoreLocation),
 			})
 		}
 
 		if batchTransfer.Spec.Source.Kafka.SecretImport != nil {
 			volumes = append(volumes, v1.Volume{
-				Name: "source-truststore",
+				Name: sourceTruststoreName,
 				VolumeSource: v1.VolumeSource{
 					Secret: &v1.SecretVolumeSource{
 						SecretName: *(batchTransfer.Spec.Source.Kafka.SecretImport),
@@ -70,7 +72,7 @@ func VolumeConfiguration(batchTransfer *motionv1.BatchTransfer) ([]v1.Volume, []
 				},
 			})
 			volumeMounts = append(volumeMounts, v1.VolumeMount{
-				Name:      "source-truststore",
+				Name:      sourceTruststoreName,
 				MountPath: "/etc/secrets/" + *(batchTransfer.Spec.Source.Kafka.SecretImport),
 			})
 		}
@@ -95,6 +97,7 @@ func (reconciler *BatchTransferReconciler) createSparkJob(batchTransfer *motionv
 	}
 
 	annotations := make(map[string]string)
+	//revive:disable
 	annotations["sidecar.istio.io/inject"] = "false"
 
 	job := &kbatch.Job{
@@ -163,7 +166,7 @@ func (reconciler *BatchTransferReconciler) createSparkJob(batchTransfer *motionv
 			},
 		},
 	}
-	if err = ctrl.SetControllerReference(batchTransfer, job, reconciler.Scheme); err != nil {
+	if err := ctrl.SetControllerReference(batchTransfer, job, reconciler.Scheme); err != nil {
 		return nil, err
 	}
 

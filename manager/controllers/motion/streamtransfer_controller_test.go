@@ -6,7 +6,7 @@ package motion
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"time"
 
 	. "github.com/onsi/ginkgo"
@@ -52,7 +52,7 @@ var _ = Describe("StreamTransfer Controller", func() {
 		It("Should simulate a StreamTranssfer successfully", func() {
 			// Load stream transfer from YAML
 			var err error
-			streamTransferYAML, err := ioutil.ReadFile("../../testdata/streamtransfer.yaml")
+			streamTransferYAML, err := os.ReadFile("../../testdata/streamtransfer.yaml")
 			Expect(err).ToNot(HaveOccurred())
 			streamTransfer := &motionv1.StreamTransfer{}
 			err = yaml.Unmarshal(streamTransferYAML, streamTransfer)

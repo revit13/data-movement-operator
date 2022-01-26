@@ -23,8 +23,8 @@ func NewArbitrary(in interface{}) *Arbitrary {
 
 func (in *Arbitrary) DeepCopyInto(out *Arbitrary) {
 	// TODO: missing type assertion
-	copy, _ := deepcopy.Copy(in).(*Arbitrary)
-	*out = *copy
+	copied, _ := deepcopy.Copy(in).(*Arbitrary)
+	*out = *copied
 }
 
 func (in *Arbitrary) DeepCopy() *Arbitrary {
