@@ -3,12 +3,8 @@
 set -x
 set -e
 
-# PATH_TO_LOCAL_FYBRIK=/data/the-mesh-for-data/
-# WORKING_DIR=/data/checkagain/dmo
-# # path to file containing access_key secert_key env var exports
-# EXPORT_FILE=/home/eres/export.sh
 
-export WORKING_DIR=dmo
+export WORKING_DIR=test-script
 export ACCESS_KEY=1234
 export SECRET_KEY=1234
 
@@ -66,11 +62,12 @@ helm install fybrik fybrik-charts/fybrik -n fybrik-system --version v$fybrikVers
 # cd /data/checkagain14/data-movement-operator/
 if [ $fybrikVersion == "0.6.0" ]
 then
-    # git clone https://github.com/fybrik/data-movement-operator.git
+    git clone https://github.com/fybrik/data-movement-operator.git
     cd data-movement-operator/
-    # git checkout releases/0.6.0
+    git checkout releases/0.6.0
     helm install data-movement-operator charts/data-movement-operator -n fybrik-system --wait
     cd ..
+    rm -rf data-movement-operator
 fi
 #cd /data/fybrik-release-0.5.0/fybrik
 #helm install fybrik-crd charts/fybrik-crd -n fybrik-system --wait
@@ -188,79 +185,5 @@ do
     sleep 6
 done
 
-
-# cat << EOF | kubectl apply -f -
-# apiVersion: v1
-# kind: Secret
-# metadata:
-#   name: bucket-creds
-#   namespace: fybrik-system
-# type: Opaque
-# stringData:
-#   access_key: "${ACCESS_KEY}"
-#   accessKeyID: "${ACCESS_KEY}"
-#   secret_key: "${SECRET_KEY}"
-#   secretAccessKey: "${SECRET_KEY}"
-# EOF
-
-# cat << EOF | kubectl apply -f -
-# apiVersion:   app.fybrik.io/v1alpha1
-# kind:         FybrikStorageAccount
-# metadata:
-#   name: storage-account
-#   namespace: fybrik-system
-# spec:
-#   id: theshire
-#   endpoints:
-#     theshire: "http://s3.eu-gb.cloud-object-storage.appdomain.cloud"
-#   secretRef:  bucket-creds
-# EOF
-
-
-# kubectl create namespace fybrik-notebook-sample
-# kubectl config set-context --current --namespace=fybrik-notebook-sample
-
-# cat << EOF | kubectl apply -f -
-# apiVersion: v1
-# kind: Secret
-# metadata:
-#   name: paysim-csv
-# type: Opaque
-# stringData:
-#   access_key: "${ACCESS_KEY}"
-#   secret_key: "${SECRET_KEY}"
-# EOF
-
-# cd ..
-
-# kubectl -n fybrik-system create configmap sample-policy --from-file=$WORKING_DIR/sample-policy-0.6.0.rego
-# kubectl -n fybrik-system label configmap sample-policy openpolicyagent.org/policy=rego
-# while [[ $(kubectl get cm sample-policy -n fybrik-system -o 'jsonpath={.metadata.annotations.openpolicyagent\.org/policy-status}') != '{"status":"ok"}' ]]; do echo "waiting for policy to be applied" && sleep 5; done
-
-#$WORKING_DIR/roee_asset.sh
-# /data/roee_0.6.0_asset.sh
-#/home/eres/m5d_resources/roee_m4d_app.sh
-#${WORKING_DIR}/fybrikapp0.6.0.sh
-#kubectl apply -f $WORKING_DIR/fybrikapplication_0.6.0.yaml -n fybrik-notebook-sample
-# cat <<EOF | kubectl apply -f -
-# apiVersion: app.fybrik.io/v1alpha1
-# kind: FybrikApplication
-# metadata:
-#   name: my-notebook121
-#   labels:
-#     app: my-notebook
-# spec:
-#   selector:
-#     workloadSelector:
-#       matchLabels:
-#         app: my-notebook
-#   appInfo:
-#     intent: Fraud Detection
-#   data:
-#     - dataSetID: "fybrik-notebook-sample/paysim-csv"
-#       requirements:
-#         interface: 
-#           protocol: fybrik-arrow-flight
-# EOF
-
+kubectl get pods -n fybrik-blueprints
 
