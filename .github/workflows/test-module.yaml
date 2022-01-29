@@ -30,4 +30,5 @@ jobs:
     - name: Install tools
       run: make install-tools
     - name: run-test
-      run: pushd hack/tools && ./test_module.sh ${{ github.event.inputs.kind-version }} ${{ github.event.inputs.fybrik-version }} ${{ github.event.inputs.module-version }} ${{ github.event.inputs.module-type }} && popd
+      # run: pushd hack/tools && ./test_module.sh ${{ github.event.inputs.kind-version }} ${{ github.event.inputs.fybrik-version }} ${{ github.event.inputs.module-version }} ${{ github.event.inputs.module-type }} && popd
+      run: pushd hack/tools && ./test_module.sh kind19 0.6.0 0.6.0 stream && popd
