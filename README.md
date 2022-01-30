@@ -18,6 +18,14 @@ Version 0.5.0 of the data movement operator (DMO) is available in Fybrik 0.5.x.
 | ---              | ---
 | 0.6.x            | 0.6.x
 
+
+Installing the chart: (available from DMO version 0.6.1 and above)
+```
+helm repo add fybrik-charts https://fybrik.github.io/charts
+helm repo update
+helm install data-movement-operator fybrik-charts/data-movement-operator -n fybrik-system --wait
+```
+
 Install latest development version from GitHub:
 ```
 git clone https://github.com/fybrik/data-movement-operator.git
