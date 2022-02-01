@@ -142,6 +142,7 @@ type Database struct {
 	// URL to Db2 instance in JDBC format
 	// Supported SSL certificates are currently certificates signed with IBM Intermediate CA
 	// or cloud signed certificates.
+	//nolint:stylecheck
 	Db2URL string `json:"db2URL"`
 
 	// Table to be read

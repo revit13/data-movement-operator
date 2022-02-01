@@ -4,7 +4,6 @@
 package utils
 
 import (
-	"io/ioutil"
 	"os"
 	"strings"
 
@@ -20,7 +19,7 @@ const (
 
 // GetSystemNamespace returns the namespace of control plane
 func GetSystemNamespace() string {
-	if data, err := ioutil.ReadFile("/var/run/secrets/kubernetes.io/serviceaccount/namespace"); err == nil {
+	if data, err := os.ReadFile("/var/run/secrets/kubernetes.io/serviceaccount/namespace"); err == nil {
 		if ns := strings.TrimSpace(string(data)); len(ns) > 0 {
 			return ns
 		}
@@ -44,7 +43,7 @@ func GetDataCatalogServiceAddress() string {
 	return os.Getenv(CatalogConnectorServiceAddressKey)
 }
 
-func SetIfNotSet(key string, value string, t ginkgo.GinkgoTInterface) {
+func SetIfNotSet(key, value string, t ginkgo.GinkgoTInterface) {
 	if _, b := os.LookupEnv(key); !b {
 		if err := os.Setenv(key, value); err != nil {
 			t.Fatalf("Could not set environment variable %s", key)

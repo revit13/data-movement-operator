@@ -6,7 +6,6 @@ package motion
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"time"
 
@@ -54,7 +53,7 @@ var _ = Describe("BatchTransfer Controller", func() {
 		It("Should simulate a BatchTransfer successfully", func() {
 			// Load batchtransfer from YAML
 			var err error
-			batchTransferYAML, err := ioutil.ReadFile("../../testdata/batchtransfer.yaml")
+			batchTransferYAML, err := os.ReadFile("../../testdata/batchtransfer.yaml")
 			Expect(err).ToNot(HaveOccurred())
 			batchTransfer := &motionv1.BatchTransfer{}
 			err = yaml.Unmarshal(batchTransferYAML, batchTransfer)

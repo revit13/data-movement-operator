@@ -24,9 +24,17 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 )
 
-func (r *BatchTransfer) SetupWebhookWithManager(mgr ctrl.Manager) error {
+const (
+	DefaultFailedJobHistoryLimit     = 5
+	MaxFailedJobHistoryLimit         = 20
+	DefaultSuccessfulJobHistoryLimit = 5
+	MaxSuccessfulJobHistoryLimit     = 20
+	batchTransferImage               = "ghcr.io/fybrik/mover:latest"
+)
+
+func (batchTransfer *BatchTransfer) SetupWebhookWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewWebhookManagedBy(mgr).
-		For(r).
+		For(batchTransfer).
 		Complete()
 }
 
@@ -35,49 +43,47 @@ func (r *BatchTransfer) SetupWebhookWithManager(mgr ctrl.Manager) error {
 
 var _ webhook.Defaulter = &BatchTransfer{}
 
-const DefaultFailedJobHistoryLimit = 5
-const DefaultSuccessfulJobHistoryLimit = 5
-
 // Default implements webhook.Defaulter so a webhook will be registered for the type
-func (r *BatchTransfer) Default() {
-	log.Printf("Defaulting batchtransfer %s", r.Name)
-	if r.Spec.Image == "" {
+//nolint:gocyclo
+func (batchTransfer *BatchTransfer) Default() {
+	log.Printf("Defaulting batchtransfer %s", batchTransfer.Name)
+	if batchTransfer.Spec.Image == "" {
 		// TODO check if can be removed after upgrading controller-gen to 0.5.0
-		r.Spec.Image = "ghcr.io/fybrik/mover:latest"
+		batchTransfer.Spec.Image = batchTransferImage
 	}
 
-	if r.Spec.ImagePullPolicy == "" {
+	if batchTransfer.Spec.ImagePullPolicy == "" {
 		// TODO check if can be removed after upgrading controller-gen to 0.5.0
-		r.Spec.ImagePullPolicy = v1.PullIfNotPresent
+		batchTransfer.Spec.ImagePullPolicy = v1.PullIfNotPresent
 	}
 
-	if r.Spec.SecretProviderURL == "" {
+	if batchTransfer.Spec.SecretProviderURL == "" {
 		if env, b := os.LookupEnv("SECRET_PROVIDER_URL"); b {
-			r.Spec.SecretProviderURL = env
+			batchTransfer.Spec.SecretProviderURL = env
 		}
 	}
 
-	if r.Spec.SecretProviderRole == "" {
+	if batchTransfer.Spec.SecretProviderRole == "" {
 		if env, b := os.LookupEnv("SECRET_PROVIDER_ROLE"); b {
-			r.Spec.SecretProviderRole = env
+			batchTransfer.Spec.SecretProviderRole = env
 		}
 	}
 
-	if r.Spec.FailedJobHistoryLimit == 0 {
-		r.Spec.FailedJobHistoryLimit = DefaultFailedJobHistoryLimit
+	if batchTransfer.Spec.FailedJobHistoryLimit == 0 {
+		batchTransfer.Spec.FailedJobHistoryLimit = DefaultFailedJobHistoryLimit
 	}
 
-	if r.Spec.SuccessfulJobHistoryLimit == 0 {
-		r.Spec.SuccessfulJobHistoryLimit = DefaultSuccessfulJobHistoryLimit
+	if batchTransfer.Spec.SuccessfulJobHistoryLimit == 0 {
+		batchTransfer.Spec.SuccessfulJobHistoryLimit = DefaultSuccessfulJobHistoryLimit
 	}
 
-	if r.Spec.Spark != nil {
-		if r.Spec.Spark.Image == "" {
-			r.Spec.Spark.Image = r.Spec.Image
+	if batchTransfer.Spec.Spark != nil {
+		if batchTransfer.Spec.Spark.Image == "" {
+			batchTransfer.Spec.Spark.Image = batchTransfer.Spec.Image
 		}
 
-		if r.Spec.Spark.ImagePullPolicy == "" {
-			r.Spec.Spark.ImagePullPolicy = r.Spec.ImagePullPolicy
+		if batchTransfer.Spec.Spark.ImagePullPolicy == "" {
+			batchTransfer.Spec.Spark.ImagePullPolicy = batchTransfer.Spec.ImagePullPolicy
 		}
 	}
 
@@ -85,32 +91,32 @@ func (r *BatchTransfer) Default() {
 		if parsedBool, err := strconv.ParseBool(env); err != nil {
 			panic(fmt.Sprintf("Cannot parse boolean value %s: %s", env, err.Error()))
 		} else {
-			r.Spec.NoFinalizer = parsedBool
+			batchTransfer.Spec.NoFinalizer = parsedBool
 		}
 	}
 
-	defaultDataStoreDescription(&r.Spec.Source)
-	defaultDataStoreDescription(&r.Spec.Destination)
+	defaultDataStoreDescription(&batchTransfer.Spec.Source)
+	defaultDataStoreDescription(&batchTransfer.Spec.Destination)
 
-	if r.Spec.WriteOperation == "" {
-		r.Spec.WriteOperation = Overwrite
+	if batchTransfer.Spec.WriteOperation == "" {
+		batchTransfer.Spec.WriteOperation = Overwrite
 	}
 
-	if r.Spec.DataFlowType == "" {
-		r.Spec.DataFlowType = Batch
+	if batchTransfer.Spec.DataFlowType == "" {
+		batchTransfer.Spec.DataFlowType = Batch
 	}
 
-	if r.Spec.ReadDataType == "" {
-		r.Spec.ReadDataType = LogData
+	if batchTransfer.Spec.ReadDataType == "" {
+		batchTransfer.Spec.ReadDataType = LogData
 	}
 
-	if r.Spec.WriteDataType == "" {
-		r.Spec.WriteDataType = LogData
+	if batchTransfer.Spec.WriteDataType == "" {
+		batchTransfer.Spec.WriteDataType = LogData
 	}
 }
 
 func defaultDataStoreDescription(dataStore *DataStore) {
-	if len(dataStore.Description) == 0 {
+	if dataStore.Description == "" {
 		switch {
 		case dataStore.Database != nil:
 			dataStore.Description = dataStore.Database.Db2URL + "/" + dataStore.Database.Table
@@ -130,45 +136,45 @@ func defaultDataStoreDescription(dataStore *DataStore) {
 var _ webhook.Validator = &BatchTransfer{}
 
 // ValidateCreate implements webhook.Validator so a webhook will be registered for the type
-func (r *BatchTransfer) ValidateCreate() error {
-	log.Printf("Validating batchtransfer %s for creation", r.Name)
-	return r.validateBatchTransfer()
+func (batchTransfer *BatchTransfer) ValidateCreate() error {
+	log.Printf("Validating batchtransfer %s for creation", batchTransfer.Name)
+	return batchTransfer.validateBatchTransfer()
 }
 
 // ValidateUpdate implements webhook.Validator so a webhook will be registered for the type
-func (r *BatchTransfer) ValidateUpdate(old runtime.Object) error {
-	log.Printf("Validating batchtransfer %s for update", r.Name)
+func (batchTransfer *BatchTransfer) ValidateUpdate(old runtime.Object) error {
+	log.Printf("Validating batchtransfer %s for update", batchTransfer.Name)
 
-	return r.validateBatchTransfer()
+	return batchTransfer.validateBatchTransfer()
 }
 
 // ValidateDelete implements webhook.Validator so a webhook will be registered for the type
-func (r *BatchTransfer) ValidateDelete() error {
-	log.Printf("Validating batchtransfer %s for deletion", r.Name)
+func (batchTransfer *BatchTransfer) ValidateDelete() error {
+	log.Printf("Validating batchtransfer %s for deletion", batchTransfer.Name)
 
 	// TODO(user): fill in your validation logic upon object deletion.
 	return nil
 }
 
-func (r *BatchTransfer) validateBatchTransfer() error {
+func (batchTransfer *BatchTransfer) validateBatchTransfer() error {
 	var allErrs field.ErrorList
 	specField := field.NewPath("spec")
-	if err := r.validateBatchTransferSpec(); err != nil {
+	if err := batchTransfer.validateBatchTransferSpec(); err != nil {
 		allErrs = append(allErrs, err)
 	}
-	if err := validateDataStore(specField.Child("source"), &r.Spec.Source); err != nil {
+	if err := validateDataStore(specField.Child("source"), &batchTransfer.Spec.Source); err != nil {
 		allErrs = append(allErrs, err...)
 	}
-	if err := validateDataStore(specField.Child("destination"), &r.Spec.Destination); err != nil {
+	if err := validateDataStore(specField.Child("destination"), &batchTransfer.Spec.Destination); err != nil {
 		allErrs = append(allErrs, err...)
 	}
-	if r.Spec.SuccessfulJobHistoryLimit < 0 || r.Spec.SuccessfulJobHistoryLimit > 20 {
-		allErrs = append(allErrs, field.Invalid(specField.Child("successfulJobHistoryLimit"),
-			r.Spec.SuccessfulJobHistoryLimit, "'successfulJobHistoryLimit' has to be between 0 and 20!"))
+	if batchTransfer.Spec.SuccessfulJobHistoryLimit < 0 || batchTransfer.Spec.SuccessfulJobHistoryLimit > MaxSuccessfulJobHistoryLimit {
+		allErrs = append(allErrs, field.Invalid(specField.Child("successfulJobHistoryLimit"), batchTransfer.Spec.SuccessfulJobHistoryLimit,
+			"'successfulJobHistoryLimit' has to be between 0 and "+strconv.Itoa(MaxSuccessfulJobHistoryLimit)))
 	}
-	if r.Spec.FailedJobHistoryLimit < 0 || r.Spec.FailedJobHistoryLimit > 20 {
-		allErrs = append(allErrs, field.Invalid(specField.Child("failedJobHistoryLimit"),
-			r.Spec.FailedJobHistoryLimit, "'failedJobHistoryLimit' has to be between 0 and 20!"))
+	if batchTransfer.Spec.FailedJobHistoryLimit < 0 || batchTransfer.Spec.FailedJobHistoryLimit > MaxFailedJobHistoryLimit {
+		allErrs = append(allErrs, field.Invalid(specField.Child("failedJobHistoryLimit"), batchTransfer.Spec.FailedJobHistoryLimit,
+			"'failedJobHistoryLimit' has to be between 0 and "+strconv.Itoa(MaxFailedJobHistoryLimit)))
 	}
 
 	if len(allErrs) == 0 {
@@ -177,16 +183,17 @@ func (r *BatchTransfer) validateBatchTransfer() error {
 
 	return apierrors.NewInvalid(
 		schema.GroupKind{Group: "motion.fybrik.io", Kind: "BatchTransfer"},
-		r.Name, allErrs)
+		batchTransfer.Name, allErrs)
 }
 
+//nolint:gocyclo,funlen
 func validateDataStore(path *field.Path, store *DataStore) []*field.Error {
 	var allErrs []*field.Error
 
 	if store.Database != nil {
 		var db = store.Database
 		databasePath := path.Child("database")
-		if len(db.Password) != 0 && db.Vault != nil {
+		if db.Password == "" && db.Vault != nil {
 			allErrs = append(allErrs, field.Invalid(databasePath, db.Vault, "Can only set vault or password!"))
 		}
 
@@ -201,7 +208,7 @@ func validateDataStore(path *field.Path, store *DataStore) []*field.Error {
 			allErrs = append(allErrs, field.Invalid(databasePath.Child("db2URL"), db.Db2URL, "Invalid database host!"))
 		}
 
-		if len(db.Table) == 0 {
+		if db.Table == "" {
 			allErrs = append(allErrs, field.Invalid(path, db.Table, "Table cannot be empty!"))
 		}
 	}
@@ -213,15 +220,15 @@ func validateDataStore(path *field.Path, store *DataStore) []*field.Error {
 			allErrs = append(allErrs, field.Invalid(s3Path.Child("endpoint"), store.S3.Endpoint, "Invalid endpoint! Expecting a endpoint URL!"))
 		}
 
-		if len(store.S3.Bucket) == 0 {
+		if store.S3.Bucket == "" {
 			allErrs = append(allErrs, field.Invalid(s3Path.Child("bucket"), store.S3.Bucket, validationutils.EmptyError()))
 		}
 
-		if len(store.S3.ObjectKey) == 0 {
+		if store.S3.ObjectKey == "" {
 			allErrs = append(allErrs, field.Invalid(s3Path.Child("objectKey"), store.S3.ObjectKey, validationutils.EmptyError()))
 		}
 
-		if (len(store.S3.AccessKey) != 0 || len(store.S3.SecretKey) != 0) && store.S3.Vault != nil {
+		if (store.S3.AccessKey != "" || store.S3.SecretKey != "") && store.S3.Vault != nil {
 			allErrs = append(allErrs, field.Invalid(s3Path, store.S3.Vault, "Can only set vault or accessKey/secretKey!"))
 		}
 	}
@@ -243,7 +250,7 @@ func validateDataStore(path *field.Path, store *DataStore) []*field.Error {
 		}
 
 		// Validate Kafka schema registry url
-		if len(store.Kafka.SchemaRegistryURL) != 0 {
+		if store.Kafka.SchemaRegistryURL != "" {
 			schemaRegistryURL, err := url.Parse(store.Kafka.SchemaRegistryURL)
 			if err != nil {
 				allErrs = append(allErrs, field.Invalid(kafkaPath.Child("schemaRegistryUrl"), store.Kafka.SchemaRegistryURL, "Could not parse url!"))
@@ -258,33 +265,35 @@ func validateDataStore(path *field.Path, store *DataStore) []*field.Error {
 		}
 
 		// Validate Kafka topic
-		if len(store.Kafka.KafkaTopic) == 0 {
+		if store.Kafka.KafkaTopic == "" {
 			allErrs = append(allErrs, field.Invalid(kafkaPath.Child("kafkaTopic"), store.Kafka.KafkaTopic, validationutils.EmptyError()))
 		}
 
-		if len(store.Kafka.Password) != 0 && store.Kafka.Vault != nil {
+		if store.Kafka.Password != "" && store.Kafka.Vault != nil {
 			allErrs = append(allErrs, field.Invalid(kafkaPath, store.Kafka.Vault, "Can only set vault or password!"))
 		}
 
 		if store.Kafka.DataFormat != "" && store.Kafka.DataFormat != "avro" && store.Kafka.DataFormat != "json" {
-			allErrs = append(allErrs, field.Invalid(kafkaPath, store.Kafka.DataFormat, "Currently only 'avro' and 'json' are supported as Kafka dataFormat!"))
+			allErrs = append(allErrs,
+				field.Invalid(kafkaPath, store.Kafka.DataFormat, "Currently only 'avro' and 'json' are supported as Kafka dataFormat!"))
 		}
 	}
 
 	return allErrs
 }
 
-func (r *BatchTransfer) validateBatchTransferSpec() *field.Error {
+func (batchTransfer *BatchTransfer) validateBatchTransferSpec() *field.Error {
 	// The field helpers from the kubernetes API machinery help us return nicely
 	// structured validation errors.
-	if len(r.Spec.Schedule) > 0 {
+	if len(batchTransfer.Spec.Schedule) > 0 {
 		return validateScheduleFormat(
-			r.Spec.Schedule,
+			batchTransfer.Spec.Schedule,
 			field.NewPath("spec").Child("schedule"))
 	}
 
-	if r.Spec.DataFlowType == Stream {
-		return field.Invalid(field.NewPath("spec").Child("dataFlowType"), r.Spec.DataFlowType, "'dataFlowType' must be 'Batch' for a BatchTransfer!")
+	if batchTransfer.Spec.DataFlowType == Stream {
+		return field.Invalid(field.NewPath("spec").Child("dataFlowType"),
+			batchTransfer.Spec.DataFlowType, "'dataFlowType' must be 'Batch' for a BatchTransfer!")
 	}
 
 	return nil

@@ -11,6 +11,13 @@ import (
 	"runtime"
 )
 
+const (
+	stepNameHashLength       = 10
+	hashPostfixLength        = 5
+	k8sMaxConformNameLength  = 63
+	helmMaxConformNameLength = 53
+)
+
 // IsDenied returns true if the data access is denied
 func IsDenied(actionName string) bool {
 	return (actionName == "Deny") // TODO FIX THIS
@@ -41,18 +48,18 @@ func Hash(value string, hashLength int) string {
 }
 
 // Generating release name based on blueprint module
-func GetReleaseName(applicationName string, namespace string, instanceName string) string {
+func GetReleaseName(applicationName, namespace, instanceName string) string {
 	return GetReleaseNameByStepName(applicationName, namespace, instanceName)
 }
 
 // Generate release name from blueprint module name
-func GetReleaseNameByStepName(applicationName string, namespace string, moduleInstanceName string) string {
+func GetReleaseNameByStepName(applicationName, namespace, moduleInstanceName string) string {
 	fullName := applicationName + "-" + namespace + "-" + moduleInstanceName
 	return HelmConformName(fullName)
 }
 
 // Generate fqdn for a module
-func GenerateModuleEndpointFQDN(releaseName string, blueprintNamespace string) string {
+func GenerateModuleEndpointFQDN(releaseName, blueprintNamespace string) string {
 	return releaseName + "." + blueprintNamespace + ".svc.cluster.local"
 }
 
@@ -60,23 +67,23 @@ func GenerateModuleEndpointFQDN(releaseName string, blueprintNamespace string) s
 // This method shortens the name keeping a prefix and using the last 5 characters of the
 // new name for the hash of the postfix.
 func K8sConformName(name string) string {
-	return ShortenedName(name, 63, 5)
+	return ShortenedName(name, k8sMaxConformNameLength, hashPostfixLength)
 }
 
 // Helm has stricter restrictions than K8s and restricts release names to 53 characters
 func HelmConformName(name string) string {
-	return ShortenedName(name, 53, 5)
+	return ShortenedName(name, helmMaxConformNameLength, hashPostfixLength)
 }
 
 // Create a name for a step in a blueprint.
 // Since this is part of the name of a release, this should be done in a central location to make testing easier
-func CreateStepName(moduleName string, assetID string) string {
-	return moduleName + "-" + Hash(assetID, 10)
+func CreateStepName(moduleName, assetID string) string {
+	return moduleName + "-" + Hash(assetID, stepNameHashLength)
 }
 
 // This function shortens a name to the maximum length given and uses rest of the string that is too long
 // as hash that gets added to the valid name.
-func ShortenedName(name string, maxLength int, hashLength int) string {
+func ShortenedName(name string, maxLength, hashLength int) string {
 	if len(name) > maxLength {
 		// The new name is in the form prefix-suffix
 		// The prefix is the prefix of the original name (so it's human readable)
