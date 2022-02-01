@@ -17,7 +17,10 @@ if [ $kubernetesVersion == "kind19" ]
 then
     bin/kind delete cluster
     bin/kind create cluster --image=kindest/node:v1.19.11@sha256:07db187ae84b4b7de440a73886f008cf903fcf5764ba8106a9fd5243d6f32729
-
+elif [ $kubernetesVersion == "kind20" ]
+then
+    bin/kind delete cluster
+    bin/kind create cluster --image=kindest/node:v1.20.7@sha256:cbeaf907fc78ac97ce7b625e4bf0de16e3ea725daf6b04f930bd14c67c671ff9
 elif [ $kubernetesVersion == "kind21" ]
 then
     bin/kind delete cluster
@@ -42,7 +45,7 @@ bin/helm repo update
 
 bin/helm install cert-manager jetstack/cert-manager \
     --namespace cert-manager \
-    --version v1.2.0 \
+    --version v1.6.2 \
     --create-namespace \
     --set installCRDs=true \
     --wait --timeout 400s
@@ -60,7 +63,7 @@ bin/helm install fybrik fybrik-charts/fybrik -n fybrik-system --version v$fybrik
 
 
 # cd /data/checkagain14/data-movement-operator/
-if [ $fybrikVersion == "0.6.0" ]
+if [ $fybrikVersion != 0.5* ]
 then
     git clone https://github.com/fybrik/data-movement-operator.git
     cd data-movement-operator/
@@ -79,7 +82,8 @@ fi
 #kubectl apply -f https://github.com/fybrik/arrow-flight-module/releases/latest/download/module.yaml -n fybrik-system
 # kubectl apply -f ${WORKING_DIR}/arrow_$moduleVersion_noactions.yaml -n fybrik-system
 
-bin/kubectl apply -f https://github.com/fybrik/arrow-flight-module/releases/download/v$moduleVersion/module.yaml -n fybrik-system
+# apply arrow flight module without actions
+bin/kubectl apply -f test-script/flight-module-$moduleVersion.yaml  -n fybrik-system
 #kubectl apply -f ${WORKING_DIR}/flight.yaml -n fybrik-system
 if [ $module == "stream" ]
 then
@@ -98,7 +102,7 @@ fi
 
 
 #datashim
-bin/kubectl apply -f https://raw.githubusercontent.com/datashim-io/datashim/master/release-tools/manifests/dlf.yaml
+bin/kubectl apply -f ../../third_party/datashim/dlf.yaml
 bin/kubectl wait --for=condition=ready pods -l app.kubernetes.io/name=dlf -n dlf --timeout=500s
 # cd $PATH_TO_LOCAL_FYBRIK/third_party/datashim/
 # make deploy
@@ -186,7 +190,7 @@ do
 done
 
 bin/kubectl get pods -n fybrik-blueprints
-POD_NAME=$(bin/kubectl get pods -n fybrik-blueprints -o=name | sed "s/^.\{4\}//")
+POD_NAME=$(bin/kubectl get pods -l app.kubernetes.io/name=arrow-flight-module-chart -n fybrik-blueprints -o=name | sed "s/^.\{4\}//")
 
 
 bin/kubectl cp $WORKING_DIR/test.py ${POD_NAME}:/tmp -n fybrik-blueprints
