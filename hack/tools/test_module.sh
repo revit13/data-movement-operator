@@ -196,10 +196,11 @@ POD_NAME=$(bin/kubectl get pods -l app.kubernetes.io/name=arrow-flight-module-ch
 bin/kubectl cp $WORKING_DIR/test.py ${POD_NAME}:/tmp -n fybrik-blueprints
 bin/kubectl exec -it ${POD_NAME} -n fybrik-blueprints -- python /tmp/test.py > res.out
 
-DIFF=$(diff $WORKING_DIR/expected.txt res.out)
+DIFF=$(diff -b $WORKING_DIR/expected.txt res.out)
 if [ "${DIFF}" == "" ]
 then
     echo "test succeeded"
 else
     echo "test failed"
+    exit 1
 fi
