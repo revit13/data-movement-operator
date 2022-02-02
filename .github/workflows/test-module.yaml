@@ -36,7 +36,6 @@ jobs:
       with:
         version: 2     # default
         verbose: false # default
-        arch: amd64    # allowed values: amd64, arm64
     - name: run-test
       run: pushd hack/tools && ./test_module.sh ${{ github.event.inputs.kind-version }} ${{ github.event.inputs.fybrik-version }} ${{ github.event.inputs.module-version }} ${{ github.event.inputs.module-type }} && popd
       
