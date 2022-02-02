@@ -12,6 +12,7 @@ kubernetesVersion=$1
 fybrikVersion=$2
 moduleVersion=$3
 module=$4
+certManagerVersion=$5
 
 if [ $kubernetesVersion == "kind19" ]
 then
@@ -45,7 +46,7 @@ bin/helm repo update
 
 bin/helm install cert-manager jetstack/cert-manager \
     --namespace cert-manager \
-    --version v1.6.2 \
+    --version v$certManagerVersion \
     --create-namespace \
     --set installCRDs=true \
     --wait --timeout 400s
