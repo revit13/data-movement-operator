@@ -69,7 +69,7 @@ then
     git clone https://github.com/fybrik/data-movement-operator.git
     cd data-movement-operator/
     git checkout releases/0.6.0
-    bin/helm install data-movement-operator charts/data-movement-operator -n fybrik-system --wait
+    ../bin/helm install data-movement-operator charts/data-movement-operator -n fybrik-system --wait
     cd ..
     rm -rf data-movement-operator
 fi
