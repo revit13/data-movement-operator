@@ -4,7 +4,7 @@ on:
     inputs:
       kind-version:
         required: true
-        default: 'kind19'
+        default: 'kind20'
       fybrik-version:
         required: true
         default: '0.6.0'
@@ -13,7 +13,7 @@ on:
         default: '0.6.0'
       module-type:
         required: true
-        default: 'stream'
+        default: 'batch'
       cert-manager-version:
         required: true
         default: '1.6.2'

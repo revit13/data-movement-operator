@@ -14,6 +14,11 @@ moduleVersion=$3
 module=$4
 certManagerVersion=$5
 
+# Trim the last two charts of the module version
+# to construct the module resource path
+moduleResourceVersion=${moduleVersion%??}".0"
+
+
 if [ $kubernetesVersion == "kind19" ]
 then
     bin/kind delete cluster
@@ -66,9 +71,9 @@ bin/helm install fybrik fybrik-charts/fybrik -n fybrik-system --version v$fybrik
 # cd /data/checkagain14/data-movement-operator/
 if [ $fybrikVersion != 0.5* ]
 then
+    # TODO: deploy from fybrik/chart repo when its available
     git clone https://github.com/fybrik/data-movement-operator.git
     cd data-movement-operator/
-    git checkout releases/0.6.0
     ../bin/helm install data-movement-operator charts/data-movement-operator -n fybrik-system --wait
     cd ..
     rm -rf data-movement-operator
@@ -81,10 +86,10 @@ fi
 
 # apply modules
 #kubectl apply -f https://github.com/fybrik/arrow-flight-module/releases/latest/download/module.yaml -n fybrik-system
-# kubectl apply -f ${WORKING_DIR}/arrow_$moduleVersion_noactions.yaml -n fybrik-system
+# kubectl apply -f ${WORKING_DIR}/arrow_$moduleResourceVersion_noactions.yaml -n fybrik-system
 
 # apply arrow flight module without actions
-bin/kubectl apply -f test-script/flight-module-$moduleVersion.yaml  -n fybrik-system
+bin/kubectl apply -f $WORKING_DIR/flight-module-$moduleResourceVersion.yaml  -n fybrik-system
 #kubectl apply -f ${WORKING_DIR}/flight.yaml -n fybrik-system
 if [ $module == "stream" ]
 then
@@ -145,7 +150,7 @@ stringData:
 EOF
 
 
-bin/kubectl apply -f $WORKING_DIR/Asset-$moduleVersion.yaml -n fybrik-notebook-sample
+bin/kubectl apply -f $WORKING_DIR/Asset-$moduleResourceVersion.yaml -n fybrik-notebook-sample
 
 
 
@@ -165,10 +170,10 @@ stringData:
   secretAccessKey: "${SECRET_KEY}"
 EOF
 
-bin/kubectl apply -f $WORKING_DIR/fybrikStorage-$moduleVersion.yaml -n fybrik-system
+bin/kubectl apply -f $WORKING_DIR/fybrikStorage-$moduleResourceVersion.yaml -n fybrik-system
 
 
-bin/kubectl -n fybrik-system create configmap sample-policy --from-file=$WORKING_DIR/sample-policy-$moduleVersion.rego
+bin/kubectl -n fybrik-system create configmap sample-policy --from-file=$WORKING_DIR/sample-policy-$moduleResourceVersion.rego
 bin/kubectl -n fybrik-system label configmap sample-policy openpolicyagent.org/policy=rego
 
 c=0
@@ -180,7 +185,7 @@ do
 done
 
 
-bin/kubectl apply -f $WORKING_DIR/fybrikapplication-$moduleVersion.yaml
+bin/kubectl apply -f $WORKING_DIR/fybrikapplication-$moduleResourceVersion.yaml
 
 c=0
 while [[ $(bin/kubectl get fybrikapplication my-notebook -o 'jsonpath={.status.ready}') != "true" ]]
