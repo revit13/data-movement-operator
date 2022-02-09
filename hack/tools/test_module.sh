@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Copyright 2020 IBM Corp.
+# SPDX-License-Identifier: Apache-2.0
 
 set -x
 set -e
@@ -61,14 +63,13 @@ bin/helm install cert-manager jetstack/cert-manager \
 bin/helm install vault fybrik-charts/vault --create-namespace -n fybrik-system \
         --set "vault.injector.enabled=false" \
         --set "vault.server.dev.enabled=true" \
-        --values https://raw.githubusercontent.com/fybrik/fybrik/v0.5.3/charts/vault/env/dev/vault-single-cluster-values.yaml
+        --values https://raw.githubusercontent.com/fybrik/fybrik/v$fybrikVersion/charts/vault/env/dev/vault-single-cluster-values.yaml
     bin/kubectl wait --for=condition=ready --all pod -n fybrik-system --timeout=400s
 
 bin/helm install fybrik-crd fybrik-charts/fybrik-crd -n fybrik-system --version v$fybrikVersion --wait
 bin/helm install fybrik fybrik-charts/fybrik -n fybrik-system --version v$fybrikVersion --wait
 
 
-# cd /data/checkagain14/data-movement-operator/
 if [ $fybrikVersion != 0.5* ]
 then
     # TODO: deploy from fybrik/chart repo when its available
@@ -78,44 +79,20 @@ then
     cd ..
     rm -rf data-movement-operator
 fi
-#cd /data/fybrik-release-0.5.0/fybrik
-#helm install fybrik-crd charts/fybrik-crd -n fybrik-system --wait
-#helm install fybrik charts/fybrik --set global.tag=0.5.3 --set global.imagePullPolicy=Always -n fybrik-system --wait
-
-
-
-# apply modules
-#kubectl apply -f https://github.com/fybrik/arrow-flight-module/releases/latest/download/module.yaml -n fybrik-system
-# kubectl apply -f ${WORKING_DIR}/arrow_$moduleResourceVersion_noactions.yaml -n fybrik-system
 
 # apply arrow flight module without actions
 bin/kubectl apply -f $WORKING_DIR/flight-module-$moduleResourceVersion.yaml  -n fybrik-system
-#kubectl apply -f ${WORKING_DIR}/flight.yaml -n fybrik-system
 if [ $module == "stream" ]
 then
     bin/kubectl apply -f https://github.com/fybrik/data-movement-operator/releases/download/v$moduleVersion/implicit-copy-stream-module.yaml -n fybrik-system
 else
     bin/kubectl apply -f https://github.com/fybrik/data-movement-operator/releases/download/v$moduleVersion/implicit-copy-batch-module.yaml -n fybrik-system
 fi
-# kubectl apply -f /data/checkagain14/data-movement-operator/modules/implicit-copy-batch-module.yaml -n fybrik-system
-
-
-# kubectl apply -f ${WORKING_DIR}/arrow_$moduleVersion_noactions.yaml -n fybrik-system
-#kubectl apply -f ${WORKING_DIR}/flight.yaml -n fybrik-system
-# kubectl apply -f https://github.com/fybrik/data-movement-operator/releases/download/v$moduleVersion/implicit-copy-batch-module.yaml -n fybrik-system
-# kubectl apply -f ${WORKING_DIR}/arrow_0.6.0_noactions.yaml -n fybrik-system
-# kubectl apply -f /data/checkagain14/data-movement-operator/modules/implicit-copy-batch-module.yaml -n fybrik-system
 
 
 #datashim
 bin/kubectl apply -f ../../third_party/datashim/dlf.yaml
 bin/kubectl wait --for=condition=ready pods -l app.kubernetes.io/name=dlf -n dlf --timeout=500s
-# cd $PATH_TO_LOCAL_FYBRIK/third_party/datashim/
-# make deploy
-
-
-
-# source ${EXPORT_FILE}
 
 
 
@@ -151,8 +128,6 @@ EOF
 
 
 bin/kubectl apply -f $WORKING_DIR/Asset-$moduleResourceVersion.yaml -n fybrik-notebook-sample
-
-
 
 
 #fybrikstorage
@@ -203,10 +178,20 @@ bin/kubectl cp $WORKING_DIR/test.py ${POD_NAME}:/tmp -n fybrik-blueprints
 bin/kubectl exec -it ${POD_NAME} -n fybrik-blueprints -- python /tmp/test.py > res.out
 
 DIFF=$(diff -b $WORKING_DIR/expected.txt res.out)
+RES=0
 if [ "${DIFF}" == "" ]
 then
     echo "test succeeded"
 else
-    echo "test failed"
-    exit 1
+    RES=1
+fi
+
+pkill kubectl
+bin/kubectl delete namespace fybrik-notebook-sample
+bin/kubectl -n fybrik-system delete configmap sample-policy
+
+if [ ${RES} == 1 ]
+then
+  echo "test failed"
+  exit 1
 fi
