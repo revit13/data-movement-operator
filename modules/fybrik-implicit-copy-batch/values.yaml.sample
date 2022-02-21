@@ -3,8 +3,8 @@ imagePullPolicy: "IfNotPresent"
 noFinalizer: "true"
 
 
-copy:
-  source:
+assets:
+- source:
     connection:
       name: s3
       s3:

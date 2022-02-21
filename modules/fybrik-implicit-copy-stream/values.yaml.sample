@@ -1,7 +1,7 @@
 image: localhost:5000/fybrik-system/dummy-mover:latest
 
-copy:
-  source:
+assets:
+- source:
     connection:
       kafka:
         bootstrap_servers: "broker1:9093"

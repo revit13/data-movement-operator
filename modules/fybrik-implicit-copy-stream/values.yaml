@@ -9,9 +9,9 @@ image: "ghcr.io/fybrik/mover:0.5.0"
 imagePullPolicy: null
 noFinalizer: "true"
 
-copy:
+assets:
   # copies from source
-  source:
+- source:
     vault: {}
     connection:
       kafka: {}

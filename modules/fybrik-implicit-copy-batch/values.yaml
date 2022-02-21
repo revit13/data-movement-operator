@@ -17,8 +17,8 @@ imagePullPolicy: null
 noFinalizer: "true"
 
 # copies from source
-copy:
-  source:
+assets:
+- source:
     vault: {}
     connection:
       s3: {}
