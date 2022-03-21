@@ -19,7 +19,7 @@ spec:
   {{- if and ($asset.args) (eq (len $asset.args) 2) -}}
   {{- with index $asset.args 0 }}
   source:
-    {{- if index . "connection" "s3" }}
+    {{ if .connection.s3 }}
     s3:
       endpoint: {{ .connection.s3.endpoint | quote }}
       bucket: {{ .connection.s3.bucket | quote }}
@@ -30,7 +30,7 @@ spec:
 {{ toYaml .vault.read | indent 8 }}
       {{ end }}
     {{ end }}
-    {{- if index . "connection" "db2" }}
+    {{ if .connection.db2 }}
     database:
       table: {{ .connection.db2.table | quote }}
       db2URL: "jdbc:db2://{{ .source.connection.db2.url }}:{{ .source.connection.db2.port }}/{{ .source.connection.db2.database }}:sslConnection={{ .source.connection.db2.ssl }};"
@@ -42,7 +42,7 @@ spec:
   {{- end }}
     {{- with index $asset.args 1 }}
   destination:
-    {{- if index . "connection" "s3" }}
+    {{ if .connection.s3 }}
     s3:
       endpoint: {{ .connection.s3.endpoint | quote }}
       bucket: {{ .connection.s3.bucket | quote }}
@@ -53,7 +53,7 @@ spec:
 {{ toYaml .vault.write | indent 8 }}
       {{ end }}
     {{ end }}
-    {{- if index . "connection" "db2" }}
+    {{ if .connection.db2 }}
     database:
       table: {{ .connection.db2.table | quote }}
       db2URL: "jdbc:db2://{{ .connection.db2.url }}:{{ .connection.db2.port }}/{{ .connection.db2.database }}:sslConnection={{ .connection.db2.ssl }};"
