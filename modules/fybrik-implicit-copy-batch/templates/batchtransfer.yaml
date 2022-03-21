@@ -15,49 +15,56 @@ metadata:
 {{ end }}
 spec:
 {{- if and (.Values.assets) (eq (len .Values.assets) 1) -}}
-{{- with (index .Values.assets 0) }}
+{{- with $asset := (index .Values.assets 0) }}
+  {{- if and ($asset.args) (eq (len $asset.args) 2) -}}
+  {{- with index $asset.args 0 }}
   source:
-    {{ if .source.connection.s3 }}
+    {{- if index . "connection" "s3" }}
     s3:
-      endpoint: {{ .source.connection.s3.endpoint | quote }}
-      bucket: {{ .source.connection.s3.bucket | quote }}
-      objectKey: {{ .source.connection.s3.object_key | quote }}
-      dataFormat: {{ .source.format | quote }}
-      {{ if .source.vault.read }}
+      endpoint: {{ .connection.s3.endpoint | quote }}
+      bucket: {{ .connection.s3.bucket | quote }}
+      objectKey: {{ .connection.s3.object_key | quote }}
+      dataFormat: {{ .format | quote }}
+      {{- if .vault.read }}
       vault:
-{{ toYaml .source.vault.read | indent 8 }}
+{{ toYaml .vault.read | indent 8 }}
       {{ end }}
     {{ end }}
-    {{ if .source.connection.db2 }}
+    {{- if index . "connection" "db2" }}
     database:
-      table: {{ .source.connection.db2.table | quote }}
+      table: {{ .connection.db2.table | quote }}
       db2URL: "jdbc:db2://{{ .source.connection.db2.url }}:{{ .source.connection.db2.port }}/{{ .source.connection.db2.database }}:sslConnection={{ .source.connection.db2.ssl }};"
-      {{ if .source.vault.read }}
+  {{- if .vault.read }}
       vault:
-{{ toYaml .source.vault.read | indent 8 }}
+{{ toYaml .vault.read | indent 8 }}
       {{ end }}
-    {{ end }}
+  {{ end }}
+  {{- end }}
+    {{- with index $asset.args 1 }}
   destination:
-    {{ if .destination.connection.s3 }}
+    {{- if index . "connection" "s3" }}
     s3:
-      endpoint: {{ .destination.connection.s3.endpoint | quote }}
-      bucket: {{ .destination.connection.s3.bucket | quote }}
-      objectKey: {{ .destination.connection.s3.object_key | quote }}
-      dataFormat: {{ .destination.format | quote }}
-      {{ if .destination.vault.write }}
+      endpoint: {{ .connection.s3.endpoint | quote }}
+      bucket: {{ .connection.s3.bucket | quote }}
+      objectKey: {{ .connection.s3.object_key | quote }}
+      dataFormat: {{ .format | quote }}
+      {{- if .vault.write }}
       vault:
-{{ toYaml .destination.vault.write | indent 8 }}
+{{ toYaml .vault.write | indent 8 }}
       {{ end }}
     {{ end }}
-    {{ if .destination.connection.db2 }}
+    {{- if index . "connection" "db2" }}
     database:
-      table: {{ .destination.connection.db2.table | quote }}
-      db2URL: "jdbc:db2://{{ .destination.connection.db2.url }}:{{ .destination.connection.db2.port }}/{{ .destination.connection.db2.database }}:sslConnection={{ .destination.connection.db2.ssl }};"
-      {{ if .destination.vault.write }}
+      table: {{ .connection.db2.table | quote }}
+      db2URL: "jdbc:db2://{{ .connection.db2.url }}:{{ .connection.db2.port }}/{{ .connection.db2.database }}:sslConnection={{ .connection.db2.ssl }};"
+    {{- if .vault.write }}
       vault:
-{{ toYaml .destination.vault.write | indent 8 }}
+{{ toYaml .vault.write | indent 8 }}
       {{ end }}
     {{ end }}
+
+  {{- end }}
+  {{- end }}
   {{- if .transformations }}
   transformation:
   {{- $redactColumns := list -}}

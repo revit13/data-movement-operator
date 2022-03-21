@@ -7,37 +7,43 @@ metadata:
   name: {{ .Release.Name }}
 spec:
 {{- if and (.Values.assets) (eq (len .Values.assets) 1) -}}
-{{- with (index .Values.assets 0) }}
+{{- with $asset := (index .Values.assets 0) }}
+{{- if and ($asset.args) (eq (len $asset.args) 2) -}}
+  {{- with index $asset.args 0 }}
   source:
     kafka:
-      kafkaBrokers: {{ .source.connection.kafka.bootstrap_servers | quote }}
-      schemaRegistryURL: {{ .source.connection.kafka.schema_registry | quote }}
-      kafkaTopic: {{ .source.connection.kafka.topic_name | quote }}
-      dataFormat: {{ .source.format | quote }}
+      kafkaBrokers: {{ .connection.kafka.bootstrap_servers | quote }}
+      schemaRegistryURL: {{ .connection.kafka.schema_registry | quote }}
+      kafkaTopic: {{ .connection.kafka.topic_name | quote }}
+      dataFormat: {{ .format | quote }}
       # user: "demo-consumer" # can be taken from vault
       # password: "" # can be taken from vault
       createSnapshot: false
-      sslTruststore: {{ .source.connection.kafka.ssl_truststore | quote }}
+      sslTruststore: {{ .connection.kafka.ssl_truststore | quote }}
       sslTruststoreLocation: /opt/spark/work-dir/ca.p12
-      sslTruststorePassword: {{ .source.connection.kafka.ssl_truststore_password | quote }}
-      securityProtocol: {{ .source.connection.kafka.security_protocol | quote }}
-      saslMechanism: {{ .source.connection.kafka.sasl_mechanism | quote }}
-      keyDeserializer: {{ .source.connection.kafka.key_deserializer | quote }}
-      valueDeserializer: {{ .source.connection.kafka.value_deserializer | quote }}
-      {{ if .source.vault.read }}
+      sslTruststorePassword: {{ .connection.kafka.ssl_truststore_password | quote }}
+      securityProtocol: {{ .connection.kafka.security_protocol | quote }}
+      saslMechanism: {{ .connection.kafka.sasl_mechanism | quote }}
+      keyDeserializer: {{ .connection.kafka.key_deserializer | quote }}
+      valueDeserializer: {{ .connection.kafka.value_deserializer | quote }}
+      {{ if .vault.read }}
       vault:
-{{ toYaml .source.vault.read | indent 8 }}
+{{ toYaml .vault.read | indent 8 }}
       {{ end }}
+  {{- end }}
+  {{- with index $asset.args 1 }}
   destination:
     s3:
-      endpoint: {{ .destination.connection.s3.endpoint | quote }}
-      bucket: {{ .destination.connection.s3.bucket | quote}}
-      objectKey: {{ .destination.connection.s3.object_key | quote }}
-      dataFormat: {{ .destination.format | quote}}
-      {{ if .destination.vault.write }}
+      endpoint: {{ .connection.s3.endpoint | quote }}
+      bucket: {{ .connection.s3.bucket | quote}}
+      objectKey: {{ .connection.s3.object_key | quote }}
+      dataFormat: {{ .format | quote}}
+      {{ if .vault.write }}
       vault:
-{{ toYaml .destination.vault.write | indent 8 }}
+{{ toYaml .vault.write | indent 8 }}
       {{ end }}
+  {{- end }}
+  {{- end }}
   {{- if .transformations }}
   transformation:
   {{- $redactColumns := list -}}

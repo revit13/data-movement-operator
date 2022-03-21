@@ -11,8 +11,8 @@ noFinalizer: "true"
 
 assets:
   # copies from source
-- source:
-    vault: {}
+- args:
+  - vault: {}
     connection:
       kafka: {}
 #        bootstrap_servers: ""
@@ -28,8 +28,7 @@ assets:
 #    vault: {}
 
   # copies to destination
-  destination:
-    vault: {}
+  - vault: {}
     connection:
       s3: {}
 #        endpoint: ""

@@ -18,8 +18,8 @@ noFinalizer: "true"
 
 # copies from source
 assets:
-- source:
-    vault: {}
+- args:
+  - vault: {}
     connection:
       s3: {}
 #        endpoint: ""
@@ -29,8 +29,7 @@ assets:
 #    vault: {}
 
   # copies to destination
-  destination:
-    vault: {}
+  - vault: {}
     connection:
       s3: {}
 #        endpoint: ""

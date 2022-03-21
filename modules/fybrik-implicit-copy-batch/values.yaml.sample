@@ -2,16 +2,14 @@ image: "localhost:5000/fybrik-system/mover:latest"
 imagePullPolicy: "IfNotPresent"
 noFinalizer: "true"
 
-
 assets:
-- source:
-    connection:
+- args:
+  - connection:
       name: s3
       s3:
         bucket: fybrik-test-bucket
         endpoint: s3.eu-gb.cloud-object-storage.appdomain.cloud
         object_key: car.data.copy.parq
-      type: 2
     format: parquet
     vault:
       read:
@@ -19,15 +17,12 @@ assets:
         authPath: /v1/auth/kubernetes/login
         role: module
         secretPath: "/v1/kubernetes-secrets/secret-name?namespace=default"
-
-  destination:
-    connection:
+  - connection:
       name: s3
       s3:
         bucket: fybrik-test-bucket
         endpoint: s3.eu-gb.cloud-object-storage.appdomain.cloud
         object_key: car.data.parq
-      type: 2
     format: parquet
     vault:
       write:
@@ -35,7 +30,8 @@ assets:
         authPath: /v1/auth/kubernetes/login
         role: module
         secretPath: "/v1/kubernetes-secrets/secret-name?namespace=default"
-
+  assetID: fybrik-notebook-sample/paysim-csv
+  capability: copy
   transformations:
   - RedactAction:
       columns:
