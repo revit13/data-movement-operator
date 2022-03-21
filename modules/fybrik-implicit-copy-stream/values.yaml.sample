@@ -1,8 +1,9 @@
 image: localhost:5000/fybrik-system/dummy-mover:latest
 
 assets:
-- source:
-    connection:
+assets:
+- args:
+  - connection:
       kafka:
         bootstrap_servers: "broker1:9093"
         schema_registry: "http://kafka-registry.strimzi.svc:8081/ccompat"
@@ -18,8 +19,7 @@ assets:
         role: module
         secretPath: "/v1/kubernetes-secrets/secret-name?namespace=default"
 
-  destination:
-    connection:
+  - connection:
       name: s3
       s3:
         bucket: fybrik-test-bucket
@@ -33,7 +33,8 @@ assets:
         authPath: /v1/auth/kubernetes/login
         role: module
         secretPath: "/v1/kubernetes-secrets/secret-name?namespace=default"
-
+  assetID: fybrik-notebook-sample/paysim-csv
+  capability: copy
   transformations:
   - RedactAction:
       columns:
