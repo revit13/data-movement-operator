@@ -115,3 +115,18 @@ Get blueprints namespace
 {{- end -}}
 {{- end -}}
 
+{{/*
+processPodSecurityContext skips certain keys in Values.podSecurityContext
+map if running on openshift.
+*/}}
+{{- define "fybrik.processPodSecurityContext" }}
+{{- $podSecurityContext := deepCopy .podSecurityContext }}
+{{- if .context.Capabilities.APIVersions.Has "security.openshift.io/v1" }}
+  {{- range $k, $v := .podSecurityContext }}
+    {{- if or (eq $k "runAsUser") (eq $k "seccompProfile") }}
+      {{- $_ := unset $podSecurityContext $k }}
+    {{- end }}
+   {{- end }}
+{{- end }}
+{{- $podSecurityContext | toYaml }}
+{{- end }}

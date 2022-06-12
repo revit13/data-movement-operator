@@ -1,5 +1,5 @@
 image: "localhost:5000/fybrik-system/mover:latest"
-imagePullPolicy: "IfNotPresent"
+imagePullPolicy: "Always"
 noFinalizer: "true"
 
 assets:

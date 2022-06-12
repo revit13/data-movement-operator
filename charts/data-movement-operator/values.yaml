@@ -25,7 +25,7 @@ global:
   # Default image pull policy for Fybrik images
   # Default behavior: latest images will be Always else IfNotPresent.
   # ref: https://kubernetes.io/docs/concepts/containers/images/#updating-images
-  imagePullPolicy: ""
+  imagePullPolicy: "Always"
   # Reference to one or more secrets to be used when pulling images.
   # ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
   imagePullSecrets: []
@@ -72,16 +72,25 @@ manager:
 
   podAnnotations: {}
 
-  podSecurityContext: {}
-    # fsGroup: 2000
+  # Pod Security Context.
+  # ref: https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context
+  podSecurityContext:
+    runAsNonRoot: true
+    # Ignored on openshift.
+    runAsUser: 10001
+    # Ignored on openshift.
+    seccompProfile:
+      type: RuntimeDefault
 
-  securityContext: {}
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1000
+  # Container Security Context.
+  # ref: https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1
+  containerSecurityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    privileged: false
+    capabilities:
+      drop:
+      - ALL
 
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious

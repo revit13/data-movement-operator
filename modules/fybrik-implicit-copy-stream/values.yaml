@@ -6,7 +6,7 @@
 # Declare variables to be passed into your templates.
 
 image: "ghcr.io/fybrik/mover:0.5.0"
-imagePullPolicy: null
+imagePullPolicy: Always
 noFinalizer: "true"
 
 assets:
