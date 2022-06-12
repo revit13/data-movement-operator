@@ -33,7 +33,7 @@ spec:
       {{- end }}
       serviceAccountName: {{ .Values.manager.serviceAccount.name }}
       securityContext:
-        {{- toYaml .Values.manager.podSecurityContext | nindent 8 }}
+      {{- include "fybrik.processPodSecurityContext" (dict "context" . "podSecurityContext" .Values.manager.podSecurityContext) | nindent 8 }}
       containers:
         {{- if .Values.manager.socat }}
         - name: integration-tests
@@ -92,7 +92,7 @@ spec:
               readOnly: true  
             {{- end }}     
           securityContext:
-            {{- toYaml .Values.manager.securityContext | nindent 12 }}
+            {{ .Values.manager.containerSecurityContext | toYaml | nindent 12 }}
           resources:
             {{- toYaml .Values.manager.resources | nindent 12 }}
       terminationGracePeriodSeconds: 10

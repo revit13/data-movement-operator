@@ -13,7 +13,7 @@
 labels: {}
 
 image: "ghcr.io/fybrik/mover:0.5.0"
-imagePullPolicy: null
+imagePullPolicy: Always
 noFinalizer: "true"
 
 # copies from source

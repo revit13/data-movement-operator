@@ -38,5 +38,5 @@ spec:
     options:
       algo: md5
   image: localhost:5000/fybrik-system/dummy-mover:master
-  imagePullPolicy: "IfNotPresent"
+  imagePullPolicy: "Always"
   suspend: false

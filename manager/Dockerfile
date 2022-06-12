@@ -5,6 +5,6 @@ FROM registry.access.redhat.com/ubi8/ubi-minimal
 ENV HOME=/tmp
 WORKDIR /tmp
 COPY manager /
-USER 1001
+USER 10001
 
 ENTRYPOINT ["/manager"]
