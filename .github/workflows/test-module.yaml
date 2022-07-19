@@ -7,10 +7,10 @@ on:
         default: 'kind20'
       fybrik-version:
         required: true
-        default: '0.6.0'
+        default: '0.7.0'
       module-version:
         required: true
-        default: '0.6.0'
+        default: '0.7.0'
       module-type:
         required: true
         default: 'batch'

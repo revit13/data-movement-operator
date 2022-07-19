@@ -21,6 +21,16 @@ certManagerVersion=$5
 # to construct the module resource path
 moduleResourceVersion=${moduleVersion%??}".0"
 
+if [ $moduleVersion == '0.5.0' ] || [ $moduleVersion == '0.6.0' ] || [ $moduleVersion == '0.7.0' ]
+then
+  oldTestVersion=true
+elif [ $moduleVersion == 'master' ]
+then
+    oldTestVersion=false
+else
+    git checkout tags/v$moduleVersion
+    oldTestVersion=false
+fi
 
 if [ $kubernetesVersion == "kind19" ]
 then
@@ -59,35 +69,61 @@ ${TOOLBIN}/helm install cert-manager jetstack/cert-manager \
     --set installCRDs=true \
     --wait --timeout 400s
 
-
-
-${TOOLBIN}/helm install vault fybrik-charts/vault --create-namespace -n fybrik-system \
+if [ $fybrikVersion == "master" ]
+then
+	rm -rf fybrik
+	git clone https://github.com/fybrik/fybrik.git
+	cd fybrik
+	../${TOOLBIN}/helm dependency update charts/vault
+	../${TOOLBIN}/helm install vault charts/vault --create-namespace -n fybrik-system \
+	    --set "vault.injector.enabled=false" \
+	    --set "vault.server.dev.enabled=true" \
+	    --values charts/vault/env/dev/vault-single-cluster-values.yaml
+	../${TOOLBIN}/kubectl wait --for=condition=ready --all pod -n fybrik-system --timeout=120s
+	../${TOOLBIN}/helm install fybrik-crd charts/fybrik-crd -n fybrik-system --wait
+	../${TOOLBIN}/helm install fybrik charts/fybrik --set global.tag=master -n fybrik-system --wait
+	cd -
+	rm -rf fybrik
+else
+	${TOOLBIN}/helm install vault fybrik-charts/vault --create-namespace -n fybrik-system \
         --set "vault.injector.enabled=false" \
         --set "vault.server.dev.enabled=true" \
         --values https://raw.githubusercontent.com/fybrik/fybrik/v$fybrikVersion/charts/vault/env/dev/vault-single-cluster-values.yaml
-    ${TOOLBIN}/kubectl wait --for=condition=ready --all pod -n fybrik-system --timeout=400s
+	${TOOLBIN}/kubectl wait --for=condition=ready --all pod -n fybrik-system --timeout=400s
 
-${TOOLBIN}/helm install fybrik-crd fybrik-charts/fybrik-crd -n fybrik-system --version v$fybrikVersion --wait
-${TOOLBIN}/helm install fybrik fybrik-charts/fybrik -n fybrik-system --version v$fybrikVersion --wait
-
+	${TOOLBIN}/helm install fybrik-crd fybrik-charts/fybrik-crd -n fybrik-system --version v$fybrikVersion --wait
+	${TOOLBIN}/helm install fybrik fybrik-charts/fybrik -n fybrik-system --version v$fybrikVersion --wait
+fi
 
 if [ $fybrikVersion != 0.5* ]
 then
     # TODO: deploy from fybrik/chart repo when its available
-    git clone https://github.com/fybrik/data-movement-operator.git
-    cd data-movement-operator/
-    ../${TOOLBIN}/helm install data-movement-operator charts/data-movement-operator -n fybrik-system --wait
-    cd ..
-    rm -rf data-movement-operator
+    ${TOOLBIN}/helm install data-movement-operator ../charts/data-movement-operator -n fybrik-system --wait
 fi
 
 # apply arrow flight module without actions
-${TOOLBIN}/kubectl apply -f $WORKING_DIR/flight-module-$moduleResourceVersion.yaml  -n fybrik-system
-if [ $module == "stream" ]
+if [ $moduleVersion == "master" ] || [ $oldTestVersion = false ]
 then
-    ${TOOLBIN}/kubectl apply -f https://github.com/fybrik/data-movement-operator/releases/download/v$moduleVersion/implicit-copy-stream-module.yaml -n fybrik-system
+	${TOOLBIN}/kubectl apply -f $WORKING_DIR/flight-module.yaml  -n fybrik-system
 else
+	${TOOLBIN}/kubectl apply -f $WORKING_DIR/flight-module-$moduleResourceVersion.yaml  -n fybrik-system
+fi
+
+if [ $moduleVersion == "master" ]
+then
+    if [ $module == "stream" ]
+    then
+    ${TOOLBIN}/kubectl apply -f ../modules/implicit-copy-stream-module.yaml -n fybrik-system
+    else
+    ${TOOLBIN}/kubectl apply -f ../modules/implicit-copy-batch-module.yaml -n fybrik-system
+    fi
+else
+    if [ $module == "stream" ]
+    then
+    ${TOOLBIN}/kubectl apply -f https://github.com/fybrik/data-movement-operator/releases/download/v$moduleVersion/implicit-copy-stream-module.yaml -n fybrik-system
+    else
     ${TOOLBIN}/kubectl apply -f https://github.com/fybrik/data-movement-operator/releases/download/v$moduleVersion/implicit-copy-batch-module.yaml -n fybrik-system
+    fi
 fi
 
 
@@ -128,9 +164,6 @@ stringData:
 EOF
 
 
-${TOOLBIN}/kubectl apply -f $WORKING_DIR/Asset-$moduleResourceVersion.yaml -n fybrik-notebook-sample
-
-
 #fybrikstorage
 cat << EOF | ${TOOLBIN}/kubectl apply -f -
 apiVersion: v1
@@ -146,10 +179,17 @@ stringData:
   secretAccessKey: "${SECRET_KEY}"
 EOF
 
-${TOOLBIN}/kubectl apply -f $WORKING_DIR/fybrikStorage-$moduleResourceVersion.yaml -n fybrik-system
+if [ $moduleVersion == "master" ] || [ $oldTestVersion = false ]
+then
+	${TOOLBIN}/kubectl apply -f $WORKING_DIR/Asset.yaml -n fybrik-notebook-sample
+	${TOOLBIN}/kubectl apply -f $WORKING_DIR/fybrikStorage.yaml -n fybrik-system
+	${TOOLBIN}/kubectl -n fybrik-system create configmap sample-policy --from-file=$WORKING_DIR/sample-policy.rego
+else
+	${TOOLBIN}/kubectl apply -f $WORKING_DIR/Asset-$moduleResourceVersion.yaml -n fybrik-notebook-sample
+	${TOOLBIN}/kubectl apply -f $WORKING_DIR/fybrikStorage-$moduleResourceVersion.yaml -n fybrik-system
+	${TOOLBIN}/kubectl -n fybrik-system create configmap sample-policy --from-file=$WORKING_DIR/sample-policy-$moduleResourceVersion.rego
+fi
 
-
-${TOOLBIN}/kubectl -n fybrik-system create configmap sample-policy --from-file=$WORKING_DIR/sample-policy-$moduleResourceVersion.rego
 ${TOOLBIN}/kubectl -n fybrik-system label configmap sample-policy openpolicyagent.org/policy=rego
 
 c=0
@@ -160,8 +200,12 @@ do
     sleep 5
 done
 
-
-${TOOLBIN}/kubectl apply -f $WORKING_DIR/fybrikapplication-$moduleResourceVersion.yaml
+if [ $moduleVersion == "master" ] || [ $oldTestVersion = false ]
+then
+	${TOOLBIN}/kubectl apply -f $WORKING_DIR/fybrikapplication.yaml
+else
+	${TOOLBIN}/kubectl apply -f $WORKING_DIR/fybrikapplication-$moduleResourceVersion.yaml
+fi
 
 c=0
 while [[ $(${TOOLBIN}/kubectl get fybrikapplication my-notebook -o 'jsonpath={.status.ready}') != "true" ]]
