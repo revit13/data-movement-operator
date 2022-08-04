@@ -18,6 +18,7 @@ Version 0.5.0 of the data movement operator (DMO) is available in Fybrik 0.5.x.
 | ---              | ---
 | 0.6.x            | 0.6.x
 | 0.7.x            | 0.7.x
+| 1.0.x            | 0.8.x
 
 
 Installing the chart: (available from DMO version 0.6.1 and above)
@@ -53,7 +54,8 @@ CSM - copy stream module
 | ---              | ---     | ---     | ---
 | 0.5.x            | 0.5.x   | 0.5.x   | `https://github.com/fybrik/data-movement-operator/releases/download/v0.5.0/implicit-copy-batch-module.yaml`
 | 0.6.x            | 0.6.x   | 0.5.x   | `https://github.com/fybrik/data-movement-operator/releases/download/v0.6.0/implicit-copy-batch-module.yaml`
-| 0.7.x            | 0.7.x   | 0.5.x   | `https://github.com/fybrik/data-movement-operator/releases/download/v0.6.0/implicit-copy-batch-module.yaml`
+| 0.7.x            | 0.7.x   | 0.5.x   | `https://github.com/fybrik/data-movement-operator/releases/download/v0.7.0/implicit-copy-batch-module.yaml`
+| 1.0.x            | 0.8.x   | 0.5.x   | `https://github.com/fybrik/data-movement-operator/releases/download/v0.8.0/implicit-copy-batch-module.yaml`
 | master           | master  | master  | `https://raw.githubusercontent.com/fybrik/data-movement-operator/master/modules/implicit-copy-batch-module.yaml`
 
 | Fybrik           | CSM     | Mover   | Command
@@ -61,6 +63,7 @@ CSM - copy stream module
 | 0.5.x            | 0.5.x   | 0.5.x   | `https://github.com/fybrik/data-movement-operator/releases/download/v0.5.0/implicit-copy-stream-module.yaml`
 | 0.6.x            | 0.6.x   | 0.5.x   | `https://github.com/fybrik/data-movement-operator/releases/download/v0.6.0/implicit-copy-stream-module.yaml`
 | 0.7.x            | 0.7.x   | 0.5.x   | `https://github.com/fybrik/data-movement-operator/releases/download/v0.7.0/implicit-copy-stream-module.yaml`
+| 1.0.x            | 0.8.x   | 0.5.x   | `https://github.com/fybrik/data-movement-operator/releases/download/v0.8.0/implicit-copy-stream-module.yaml`
 | master           | master  | master  | `https://raw.githubusercontent.com/fybrik/data-movement-operator/master/modules/implicit-copy-stream-module.yaml`
 
 ## Development version using the repo
