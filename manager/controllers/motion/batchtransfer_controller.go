@@ -46,6 +46,7 @@ type BatchTransferReconciler struct {
 // - Check if the object is being deleted and handle a finalizer if needed
 // - Update the status by checking the existing Job/CronJob
 // - If K8s objects are not yet created create the objects
+//
 //nolint:gocyclo,funlen
 func (reconciler *BatchTransferReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	log := reconciler.Log.WithValues("batchtransfer", req.NamespacedName)

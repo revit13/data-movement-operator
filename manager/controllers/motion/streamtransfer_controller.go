@@ -32,6 +32,7 @@ type StreamTransferReconciler struct {
 // if it does not exist (including a persistent checkpoint storage) and otherwise be left running.
 // A more involved version that is handling errors and is discovering crash loops may have to be based
 // on a Pod directly in order to discover errors on a finer granular level.
+//
 //nolint:gocyclo
 func (reconciler *StreamTransferReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	log := reconciler.Log.WithValues("streamtransfer", req.NamespacedName)

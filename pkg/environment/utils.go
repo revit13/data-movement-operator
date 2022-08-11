@@ -22,6 +22,7 @@ func GetEnvAsInt(key string, defaultValue int) int {
 
 // Returns the float32 value of an environment variable.
 // If the environment variable is not set or cannot be parsed the default value is returned.
+//
 //nolint:revive,gomnd
 func GetEnvAsFloat32(key string, defaultValue float32) float32 {
 	if env, isSet := os.LookupEnv(key); isSet {

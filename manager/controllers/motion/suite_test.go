@@ -56,17 +56,17 @@ func TestMotionAPIs(t *testing.T) {
 
 // Before a test suite is run a K8s test environment can be set up.
 // There are multiple flags that can be set to run the simulation test
-// - USE_EXISTING_CLUSTER: (true/false)
-//   This variable controls if an existing K8s cluster should be used or not.
-//   If not testEnv will spin up an artificial environment that includes a local etcd setup.
-// - NO_SIMULATED_PROGRESS: (true/false)
-//   This variable can be used by tests that can manually simulate progress of e.g. jobs or pods.
-//   e.g. the simulated test environment from testEnv does not progress pods etc while when testing against
-//   an external Kubernetes cluster this will actually run pods.
-// - USE_EXISTING_CONTROLLER: (true/false)
-//   This setting controls if a controller should be set up and run by this test suite or if an external one
-//   should be used. E.g. in integration tests running against an existing setup a controller is already existing
-//   in the Kubernetes cluster and should not be started by the test as two controllers competing may influence the test.
+//   - USE_EXISTING_CLUSTER: (true/false)
+//     This variable controls if an existing K8s cluster should be used or not.
+//     If not testEnv will spin up an artificial environment that includes a local etcd setup.
+//   - NO_SIMULATED_PROGRESS: (true/false)
+//     This variable can be used by tests that can manually simulate progress of e.g. jobs or pods.
+//     e.g. the simulated test environment from testEnv does not progress pods etc while when testing against
+//     an external Kubernetes cluster this will actually run pods.
+//   - USE_EXISTING_CONTROLLER: (true/false)
+//     This setting controls if a controller should be set up and run by this test suite or if an external one
+//     should be used. E.g. in integration tests running against an existing setup a controller is already existing
+//     in the Kubernetes cluster and should not be started by the test as two controllers competing may influence the test.
 var _ = BeforeSuite(func(done Done) {
 	logf.SetLogger(zap.New(zap.WriteTo(GinkgoWriter), zap.UseDevMode(true)))
 	By("bootstrapping test environment")

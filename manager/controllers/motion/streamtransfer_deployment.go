@@ -19,6 +19,7 @@ import (
 
 // Create the deployment for a stream transfer object.
 // This deployment will mount the PVC for the checkpoint directory as well as the secret for the configuration.
+//
 //nolint:funlen
 func (reconciler *StreamTransferReconciler) CreateDeployment(streamTransfer *motionv1.StreamTransfer) error {
 	log := reconciler.Log.WithValues("streamTransfer", streamTransfer.Name)

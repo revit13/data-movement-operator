@@ -44,6 +44,7 @@ func (batchTransfer *BatchTransfer) SetupWebhookWithManager(mgr ctrl.Manager) er
 var _ webhook.Defaulter = &BatchTransfer{}
 
 // Default implements webhook.Defaulter so a webhook will be registered for the type
+//
 //nolint:gocyclo
 func (batchTransfer *BatchTransfer) Default() {
 	log.Printf("Defaulting batchtransfer %s", batchTransfer.Name)
