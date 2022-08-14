@@ -101,7 +101,7 @@ The rest of this README describes the directory structure.
 ### `apis`
 
 Holds the Customer Resource Definitions (CRDs) of the project:
-- `app.fybrik.io/v1alpha1`: Includes `FybrikApplication`, administrator APIs `FybrikModule` and `FybrikBucket`, and internal CRDs `Blueprint` and `Plotter`.
+- `app.fybrik.io/v1beta1`: Includes `FybrikApplication`, administrator APIs `FybrikModule` and `FybrikBucket`, and internal CRDs `Blueprint` and `Plotter`.
 - `motion.fybrik.io/v1alpha1`: Includes data movements APIs `BatchTransfer` and `StreamTransfer`. Usually not used directly but rather invoked as a module.
 
 ### `controllers`
